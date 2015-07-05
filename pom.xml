@@ -33,17 +33,6 @@
 		<url>git@github.com:abhinavmishra14/amazon-aws-s3-utils.git</url>
 	</scm>
 
-	<distributionManagement>
-		<repository>
-			<id>central</id>
-			<url>https://repo1.maven.org/maven2</url>
-		</repository>
-		<snapshotRepository>
-			<id>central</id>
-			<url>https://repo1.maven.org/maven2</url>
-		</snapshotRepository>
-	</distributionManagement>
-
 	<dependencies>
 		<dependency>
 			<groupId>com.amazonaws</groupId>

@@ -5,19 +5,20 @@
  */
 package com.abhinav.aws.s3.service;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.model.Bucket;
+import com.amazonaws.services.s3.model.DeleteObjectsRequest.KeyVersion;
 import com.amazonaws.services.s3.model.DeleteObjectsResult;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectResult;
 import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.services.s3.model.DeleteObjectsRequest.KeyVersion;
 
 /**
  * The Interface AwsS3IamService.<br/>
@@ -86,15 +87,14 @@ public interface AwsS3IamService {
 	 * @param bucketName the bucket name
 	 * @param fileName the file name
 	 * @param inStream the in stream
-	 * @param objectMetadata the object metadata
 	 * @return the put object result
 	 * @throws AmazonClientException the amazon client exception
 	 * @throws AmazonServiceException the amazon service exception
+	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	PutObjectResult uploadObject(final String bucketName,
-			final String fileName, final InputStream inStream,
-			final ObjectMetadata objectMetadata) throws AmazonClientException,
-			AmazonServiceException;
+			final String fileName, final InputStream inStream)
+			throws AmazonClientException, AmazonServiceException, IOException;
 
 	
 	/**

@@ -6,15 +6,14 @@
 
 package com.abhinav.aws.s3.service;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,7 +25,6 @@ import com.amazonaws.services.s3.model.DeleteObjectsRequest.KeyVersion;
 import com.amazonaws.services.s3.model.DeleteObjectsResult;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectResult;
 import com.amazonaws.services.s3.model.S3Object;
 
@@ -44,10 +42,10 @@ public class AwsS3IamServiceTest{
 	private static final String AWS_S3_BUCKET = "s3-publishing";
 	
 	/** The Constant AWS_ACCESS_KEY. */
-	private static final String AWS_ACCESS_KEY = "xxxx";
+	private static final String AWS_ACCESS_KEY = "xxxxx";
 	
 	/** The Constant AWS_SECRET_KEY. */
-	private static final String AWS_SECRET_KEY = "xxxx";
+	private static final String AWS_SECRET_KEY = "yyyyy";
 	
 	/**
 	 * Sets the up.
@@ -195,20 +193,9 @@ public class AwsS3IamServiceTest{
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	private PutObjectResult uploadObjectForTest(String key) throws IOException {
-		PutObjectResult pubObjRes = null;
-		File scratchFile = null;
-		try {
-			InputStream inStream = AwsS3IamServiceTest.class.getResourceAsStream("/sample-file/TestPutObject.txt");	
-			scratchFile = File.createTempFile("prefix", "suffix");
-		    FileUtils.copyInputStreamToFile(inStream, scratchFile);    
-		    PutObjectRequest putObjectRequest = new PutObjectRequest(AWS_S3_BUCKET, key, scratchFile);
-		    pubObjRes = awsS3IamService.uploadObject(putObjectRequest);
-		} finally {
-		    if(scratchFile!=null && scratchFile.exists()) {
-		        scratchFile.delete();
-		    }
-		}
-		return pubObjRes;
+		InputStream inStream = AwsS3IamServiceTest.class
+				.getResourceAsStream("/sample-file/TestPutObject.txt");
+		return awsS3IamService.uploadObject(AWS_S3_BUCKET,key,inStream);
 	}
 	
 	

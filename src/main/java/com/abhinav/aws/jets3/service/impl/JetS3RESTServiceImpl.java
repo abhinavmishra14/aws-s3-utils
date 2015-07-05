@@ -16,9 +16,11 @@ import org.jets3t.service.impl.rest.httpclient.RestS3Service;
 import org.jets3t.service.model.S3Bucket;
 import org.jets3t.service.model.S3Object;
 import org.jets3t.service.security.AWSCredentials;
-import org.springframework.util.Assert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.abhinav.aws.jets3.service.JetS3RESTService;
+import com.abhinav.aws.util.AWSUtil;
 
 /**
  * The Class JetS3RESTService.<br/>
@@ -27,6 +29,9 @@ import com.abhinav.aws.jets3.service.JetS3RESTService;
  * @author Abhinav kumar mishra
  */
 public class JetS3RESTServiceImpl implements JetS3RESTService{
+
+	/** The Constant LOGGER. */
+	private static final Logger LOGGER = LoggerFactory.getLogger(JetS3RESTServiceImpl.class);
 
 	/** The bucket name. */
 	private final String bucketName;
@@ -41,19 +46,21 @@ public class JetS3RESTServiceImpl implements JetS3RESTService{
 	 * Instantiates a new rEST service.
 	 */
 	public JetS3RESTServiceImpl(final String accessKey, final String secretKey, final String bucketName) {
-		Assert.notNull(accessKey, "AccessKey is null!");
-		Assert.notNull(secretKey, "SecretKey is null!");
-		Assert.notNull(bucketName, "BucketName is null!");
+		AWSUtil.notNull(accessKey, "AccessKey is null!");
+		AWSUtil.notNull(secretKey, "SecretKey is null!");
+		AWSUtil.notNull(bucketName, "BucketName is null!");
 
 		//Amazon Web Services BucketName
 		this.bucketName = bucketName;
 		// Instantiate S3 Service and create necessary bucket.
 		try {
+			if(LOGGER.isDebugEnabled()){
+				LOGGER.debug("Initializing JetS3 service..");
+			}
 			s3Service = new RestS3Service(new AWSCredentials(accessKey, secretKey));
 			bucket = s3Service.getOrCreateBucket(bucketName);
 		} catch (S3ServiceException s3ServExcp) {
-			System.err.println("JetS3RESTService Initialization Error: "
-					+ s3ServExcp);
+			LOGGER.error("JetS3RESTService Initialization Error ", s3ServExcp);
 		}
 	} 
 
@@ -69,6 +76,9 @@ public class JetS3RESTServiceImpl implements JetS3RESTService{
 	@Override
 	public boolean putObject(final String fileName) throws S3ServiceException,
 			NoSuchAlgorithmException, IOException {
+		if(LOGGER.isDebugEnabled()){
+			LOGGER.debug("putObject invoked, filename: {}",fileName);
+		}
 		final S3Object obj = s3Service.putObject(bucket, new S3Object(new File(fileName)));
 		return obj.getDataInputFile().exists();
 	}
@@ -85,6 +95,9 @@ public class JetS3RESTServiceImpl implements JetS3RESTService{
 	@Override
 	public boolean putObject(final File fileName) throws S3ServiceException,
 			NoSuchAlgorithmException, IOException {
+		if(LOGGER.isDebugEnabled()){
+			LOGGER.debug("putObject invoked, filename: {}", fileName);
+		}
 		final S3Object obj = s3Service.putObject(bucket, new S3Object(fileName));
 		return obj.getDataInputFile().exists();
 	}
@@ -100,6 +113,9 @@ public class JetS3RESTServiceImpl implements JetS3RESTService{
 	@Override
 	public void deleteObject(final String fileName)
 			throws NoSuchAlgorithmException, IOException, ServiceException {
+		if(LOGGER.isDebugEnabled()){
+			LOGGER.debug("deleteObject invoked, filename: {}", fileName);
+		}
 		s3Service.deleteObject(bucketName,new S3Object(new File(fileName)).getKey());
 	}
 
@@ -114,6 +130,9 @@ public class JetS3RESTServiceImpl implements JetS3RESTService{
 	@Override
 	public void deleteObject(final File fileName)
 			throws NoSuchAlgorithmException, IOException, ServiceException {
+		if(LOGGER.isDebugEnabled()){
+			LOGGER.debug("deleteObject invoked, filename: {}", fileName);
+		}
 		s3Service.deleteObject(bucketName, new S3Object(fileName).getKey());
 	}
 }

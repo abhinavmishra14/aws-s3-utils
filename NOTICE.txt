@@ -5,11 +5,10 @@ THIRD PARTY COMPONENTS
 ===Apache 2.0 - License====
 jets3t		http://www.jets3t.org/ - Copyright 2006-2009 James Murty.
 commons-*   http://commons.apache.org/
-spring-*    http://www.springsource.com
- 
  
 ===MIT License===
 mockito-all  http://mockito.org/
+slf4j-*   http://www.slf4j.org/
 
 ===BSD License===
 hemcrest-*  http://hamcrest.org/JavaHamcrest/

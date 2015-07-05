@@ -11,6 +11,8 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<!-- Append copyright info into javadocs. -->
+		<bottom>Copyright &copy; 2015. Abhinav Kumar Mishra. All rights reserved.</bottom>
 	</properties>
 
 	<licenses>

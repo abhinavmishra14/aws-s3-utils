@@ -58,6 +58,10 @@ public class AwsS3IamServiceImpl implements AwsS3IamService {
 	/**
 	 * Instantiates a new aws s3 iam service impl.<br/>
 	 * Use this constructor if you have keys and dont want to use IAM roles.
+	 * This Service can be used when you want to communicate with Amazon S3 bucket independenly.<br/>
+	 * UseCase: Assuming you are working on a developer machine and want to upload contents on S3 bucket.<br/>
+	 * This service is implementation of core amazon sdk.
+	 *  
 	 *
 	 * @param accessKey the access key
 	 * @param secretKey the secret key
@@ -85,7 +89,10 @@ public class AwsS3IamServiceImpl implements AwsS3IamService {
 
 	/**
 	 * Instantiates a new aws s3 iam service impl. <br/>
-	 * Use this constructor if you want to use IAM roles.
+	 * Use this constructor if you want to use IAM roles. <br/>
+	 * 
+	 * Note: In order to get the credenctials based on IAM role, 
+	 * you need to first map the EC2 instance with the role and launch it.
 	 */
 	public AwsS3IamServiceImpl() {
 		super();
@@ -161,7 +168,7 @@ public class AwsS3IamServiceImpl implements AwsS3IamService {
 		PutObjectRequest putObjectRequest = null;
 		PutObjectResult uploadResult = null;
 		try {
-			// Create temp file from stream to avoid out of memory exception
+			// Create temp file from stream to avoid 'out of memory' exception
 			tempFile = AWSUtil.createTempFileFromStream(inputStream);
 			putObjectRequest = new PutObjectRequest(bucketName, fileName,tempFile);
 			uploadResult = uploadObject(putObjectRequest);
@@ -225,7 +232,7 @@ public class AwsS3IamServiceImpl implements AwsS3IamService {
 		metadata.setContentLength(0);
 		// Create empty content,since creating empty folder needs an empty content
 		final InputStream emptyContent = new ByteArrayInputStream(new byte[0]);
-		// Create a PutObjectRequest passing the directory name suffixed by /
+		// Create a PutObjectRequest passing the directory name suffixed by '/'
 		final PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName,
 				dirName + SEPARATOR, emptyContent, metadata);
 		return s3client.putObject(putObjectRequest);

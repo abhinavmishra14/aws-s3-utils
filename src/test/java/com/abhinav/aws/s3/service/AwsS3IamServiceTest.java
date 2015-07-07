@@ -41,11 +41,6 @@ public class AwsS3IamServiceTest{
 	/** The Constant AWS_S3_BUCKET. */
 	private static final String AWS_S3_BUCKET = "s3-publishing";
 	
-	/** The Constant AWS_ACCESS_KEY. */
-	private static final String AWS_ACCESS_KEY = "xxxxx";
-	
-	/** The Constant AWS_SECRET_KEY. */
-	private static final String AWS_SECRET_KEY = "yyyyy";
 	
 	/**
 	 * Sets the up.
@@ -54,7 +49,17 @@ public class AwsS3IamServiceTest{
 	 */
 	@Before
 	public void setUp() throws Exception {
-		awsS3IamService = new AwsS3IamServiceImpl(AWS_ACCESS_KEY,AWS_SECRET_KEY);
+		
+		/*For testing IAM services anywhere else use the parameterized
+		  constructor call to create instance of AwsS3IamService.*/
+		
+		//awsS3IamService = new AwsS3IamServiceImpl("accessKey","secretKey");
+		
+		/* For testing IAM services on EC2 instance which is already mapped with
+		  IAM role, use the default constructor call to create instance of
+		  AwsS3IamService. */
+		
+		awsS3IamService = new AwsS3IamServiceImpl();  
 	}
 
 	/**

@@ -43,7 +43,11 @@ public class JetS3RESTServiceImpl implements JetS3RESTService{
 	private S3Bucket bucket;
 
 	/**
-	 * Instantiates a new rEST service.
+	 * Instantiates a new rEST service.<br/>
+	 * This Service can be used when you want to communicate with Amazon S3 bucket independenly.<br/>
+	 * UseCase: Assuming you are working on a developer machine and want to upload contents on S3 bucket.
+	 * This service is implementation of core amazon restful webservices.
+	 * 
 	 */
 	public JetS3RESTServiceImpl(final String accessKey, final String secretKey, final String bucketName) {
 		AWSUtil.notNull(accessKey, "AccessKey is null!");

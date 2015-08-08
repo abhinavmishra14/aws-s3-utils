@@ -5,8 +5,7 @@ Utility to work with Amazon S3. This utility has features to access S3 using IAM
 ###Note: By default test cases will be skipped.
 ###Use access keys to build in order to pass the test cases and use skip test parameter (-Dmaven.test.skip=false).
 
-To force run the test:
-e.g. mvn clean install -Dmaven.test.skip=false
+To force run tests: e.g. mvn clean install -Dmaven.test.skip=false
 
 
 

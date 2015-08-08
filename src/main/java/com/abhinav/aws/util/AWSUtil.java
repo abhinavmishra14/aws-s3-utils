@@ -27,14 +27,14 @@ public final class AWSUtil {
 	/**
 	 * Creates the temp file from stream.
 	 *
-	 * @param inStream the in stream
+	 * @param inputStream the in stream
 	 * @return the file
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
-	public static File createTempFileFromStream(final InputStream inStream)
+	public static File createTempFileFromStream(final InputStream inputStream)
 			throws IOException {
-		File tempFile = File.createTempFile("tempFile", "s3Object");
-		FileUtils.copyInputStreamToFile(inStream, tempFile);    	
+		final File tempFile = File.createTempFile("tempFile", "s3Object");
+		FileUtils.copyInputStreamToFile(inputStream, tempFile);    	
 		return tempFile;
 	}
 	

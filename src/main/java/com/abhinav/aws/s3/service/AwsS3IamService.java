@@ -22,8 +22,10 @@ import com.amazonaws.services.s3.model.S3Object;
 
 /**
  * The Interface AwsS3IamService.<br/>
- * This service class will use the IAM Roles to perform the operations on S3 buckets.<br/>
- * SDK Location: http://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-core/1.10.2
+ * This service class will use the IAM Roles to perform the operations on S3
+ * buckets.<br/>
+ * SDK Location:
+ * http://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-core/1.10.2
  * 
  * @author Abhinav kumar mishra
  */
@@ -86,14 +88,14 @@ public interface AwsS3IamService {
 	 *
 	 * @param bucketName the bucket name
 	 * @param fileName the file name
-	 * @param inStream the in stream
+	 * @param inputStream the inputStream
 	 * @return the put object result
 	 * @throws AmazonClientException the amazon client exception
 	 * @throws AmazonServiceException the amazon service exception
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	PutObjectResult uploadObject(final String bucketName,
-			final String fileName, final InputStream inStream)
+			final String fileName, final InputStream inputStream)
 			throws AmazonClientException, AmazonServiceException, IOException;
 
 	
@@ -112,8 +114,7 @@ public interface AwsS3IamService {
 	 * Gets the object.
 	 *
 	 * @param bucketName the bucket name
-	 * @param key
-	 *            the key, it is the name of file. e.g. myFile.pdf which is
+	 * @param key the key, it is the name of file. e.g. myFile.pdf which is
 	 *            already existing in specified bucket
 	 * @return the object
 	 * @throws AmazonClientException the amazon client exception
@@ -127,7 +128,7 @@ public interface AwsS3IamService {
 	 *
 	 * @param bucketName the bucket name
 	 * @param key the key
-	 * @param filePath the file ptah
+	 * @param filePath the file path
 	 * @return the object metadata
 	 * @throws AmazonClientException the amazon client exception
 	 * @throws AmazonServiceException the amazon service exception

@@ -303,4 +303,13 @@ public class AwsS3IamServiceImpl implements AwsS3IamService {
 		}
 		s3client.deleteBucket(bucketName);
 	}
+
+	/* (non-Javadoc)
+	 * @see com.abhinav.aws.s3.service.AwsS3IamService#isBucketExists(java.lang.String)
+	 */
+	@Override
+	public boolean isBucketExists(final String bucketName)
+			throws AmazonClientException, AmazonServiceException {
+		return s3client.doesBucketExist(bucketName);
+	}
 }

@@ -190,6 +190,12 @@ public class AwsS3IamServiceTest{
 		assertNotNull(delResp);
 	}
 	
+	@Test
+	public void isBucketExistsTest()throws Exception {
+		boolean isBucketExist = awsS3IamService.isBucketExists(AWS_S3_BUCKET);
+		assertEquals(true,isBucketExist);
+	}
+	
 	/**
 	 * Upload object for test.
 	 *

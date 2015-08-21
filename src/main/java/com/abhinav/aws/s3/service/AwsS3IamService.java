@@ -183,4 +183,15 @@ public interface AwsS3IamService {
 	 */
 	void deleteDirectory(final String bucketName, final String dirName)
 			throws AmazonClientException, AmazonServiceException;
+	
+	/**
+	 * Checks if is bucket exists.
+	 *
+	 * @param bucketName the bucket name
+	 * @return true, if checks if is bucket exists
+	 * @throws AmazonClientException the amazon client exception
+	 * @throws AmazonServiceException the amazon service exception
+	 */
+	boolean isBucketExists(final String bucketName)
+			throws AmazonClientException, AmazonServiceException;
 }

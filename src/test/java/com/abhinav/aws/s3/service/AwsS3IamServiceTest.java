@@ -190,6 +190,11 @@ public class AwsS3IamServiceTest{
 		assertNotNull(delResp);
 	}
 	
+	/**
+	 * Checks if is bucket exists test.
+	 *
+	 * @throws Exception the exception
+	 */
 	@Test
 	public void isBucketExistsTest()throws Exception {
 		boolean isBucketExist = awsS3IamService.isBucketExists(AWS_S3_BUCKET);

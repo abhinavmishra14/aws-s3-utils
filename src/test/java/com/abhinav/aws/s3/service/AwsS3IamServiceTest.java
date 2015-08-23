@@ -9,8 +9,10 @@ package com.abhinav.aws.s3.service;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +21,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.abhinav.aws.s3.service.impl.AwsS3IamServiceImpl;
+import com.abhinav.aws.util.AWSUtil;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.DeleteObjectsRequest.KeyVersion;
@@ -27,6 +30,8 @@ import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectResult;
 import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.s3.transfer.Upload;
+import com.amazonaws.util.StringUtils;
 
 /**
  * The Class AwsS3IamServiceTest.
@@ -36,10 +41,13 @@ import com.amazonaws.services.s3.model.S3Object;
 public class AwsS3IamServiceTest{
 
     /** The aws s3 iam service. */
-    private AwsS3IamService awsS3IamService=null;
+	private AwsS3IamService awsS3IamService;
 	
 	/** The Constant AWS_S3_BUCKET. */
 	private static final String AWS_S3_BUCKET = "s3-publishing";
+	
+	/** The Constant SAMPLE_FILE_NAME. */
+	private static final String SAMPLE_FILE_NAME = "TestPutObject.txt";
 	
 	
 	/**
@@ -84,10 +92,39 @@ public class AwsS3IamServiceTest{
 	public void testUploadObjectStringStringInputStreamObjectMetadata()
 			throws Exception {
 		awsS3IamService.createBucket(AWS_S3_BUCKET);//create bucket for test
-		PutObjectResult pubObjRes = uploadObjectForTest("TestPutObject.txt");
+		PutObjectResult pubObjRes = uploadObjectForTest(SAMPLE_FILE_NAME);
 		assertNotNull(pubObjRes);
 	}
 
+	/**
+	 * Test upload object and wait for completion.
+	 *
+	 * @throws Exception the exception
+	 */
+	@Test
+	public void testUploadObjectAndWaitForCompletion() throws Exception{
+		awsS3IamService.createBucket(AWS_S3_BUCKET);//create bucket for test
+		InputStream inStream = AwsS3IamServiceTest.class
+				.getResourceAsStream("/sample-file/TestPutObject.txt");
+		boolean isDone = awsS3IamService.uploadObjectAndListenProgress(AWS_S3_BUCKET,SAMPLE_FILE_NAME,inStream);
+		assertEquals(true,isDone);
+	}
+	
+	/**
+	 * Test upload file async.
+	 *
+	 * @throws Exception the exception
+	 */
+	@Test
+	public void testUploadFileAsync() throws Exception{
+		awsS3IamService.createBucket(AWS_S3_BUCKET);//create bucket for test
+		InputStream inStream = AwsS3IamServiceTest.class
+				.getResourceAsStream("/sample-file/TestPutObject.txt");
+		File tempFile = AWSUtil.createTempFileFromStream(inStream);
+		Upload upload = awsS3IamService.uploadFileAsync(AWS_S3_BUCKET, SAMPLE_FILE_NAME, tempFile);
+		upload.waitForUploadResult();
+		assertEquals(true,upload.isDone());
+	}
 	
 	/**
 	 * Test method for {@link com.abhinav.aws.s3.service.impl.AwsS3IamServiceImpl#getAllBuckets()}.
@@ -109,11 +146,11 @@ public class AwsS3IamServiceTest{
 	@Test
 	public void testGetObject() throws Exception {
 		awsS3IamService.createBucket(AWS_S3_BUCKET);//create bucket for test 
-		uploadObjectForTest("TestPutObject.txt");// upload for test
-		final GetObjectRequest getObjRequest = new GetObjectRequest(AWS_S3_BUCKET, "TestPutObject.txt");
+		uploadObjectForTest(SAMPLE_FILE_NAME);// upload for test
+		final GetObjectRequest getObjRequest = new GetObjectRequest(AWS_S3_BUCKET, SAMPLE_FILE_NAME);
 		S3Object s3Obj = awsS3IamService.getObject(getObjRequest);
 		assertNotNull(s3Obj);
-		assertEquals("TestPutObject.txt", s3Obj.getKey());
+		assertEquals(SAMPLE_FILE_NAME, s3Obj.getKey());
 	}
 
 	/**
@@ -124,8 +161,8 @@ public class AwsS3IamServiceTest{
 	@Test
 	public void testGetObjectAsInputStream() throws Exception {
 		awsS3IamService.createBucket(AWS_S3_BUCKET);//create bucket for test 
-		uploadObjectForTest("TestPutObject.txt");// upload for test
-		InputStream inStream = awsS3IamService.getObject(AWS_S3_BUCKET, "TestPutObject.txt");
+		uploadObjectForTest(SAMPLE_FILE_NAME);// upload for test
+		InputStream inStream = awsS3IamService.getObject(AWS_S3_BUCKET, SAMPLE_FILE_NAME);
 		assertNotNull(inStream);
 		assertEquals(true, inStream.available()>0);// check if content available in stream
 	}
@@ -138,8 +175,8 @@ public class AwsS3IamServiceTest{
 	@Test
 	public void testDownloadObject() throws Exception {
 		awsS3IamService.createBucket(AWS_S3_BUCKET);//create bucket for test 
-		uploadObjectForTest("TestPutObject.txt");// upload for test
-		ObjectMetadata objMetadata = awsS3IamService.downloadObject(AWS_S3_BUCKET, "TestPutObject.txt", "test.txt");
+		uploadObjectForTest(SAMPLE_FILE_NAME);// upload for test
+		ObjectMetadata objMetadata = awsS3IamService.downloadObject(AWS_S3_BUCKET, SAMPLE_FILE_NAME, "test.txt");
 		assertNotNull(objMetadata);
 		assertEquals(true, objMetadata.getContentLength()>0);// check if content available
 	}
@@ -155,7 +192,7 @@ public class AwsS3IamServiceTest{
 		PutObjectResult response = awsS3IamService.createDirectory(AWS_S3_BUCKET, "test");
 		assertNotNull(response);
 		//put content in this dir
-		PutObjectResult pubObjRes = uploadObjectForTest("TestPutObject.txt");
+		PutObjectResult pubObjRes = uploadObjectForTest(SAMPLE_FILE_NAME);
 		assertNotNull(pubObjRes);
 	}
 
@@ -167,9 +204,9 @@ public class AwsS3IamServiceTest{
 	@Test(expected = AmazonS3Exception.class) 
 	public void testDeleteObjectStringString() throws Exception {
 		awsS3IamService.createBucket(AWS_S3_BUCKET);//create bucket for test 
-		uploadObjectForTest("TestPutObject.txt");// upload for test
-		awsS3IamService.deleteObject(AWS_S3_BUCKET, "TestPutObject.txt");
-		final GetObjectRequest getObjRequest = new GetObjectRequest(AWS_S3_BUCKET, "TestPutObject.txt");
+		uploadObjectForTest(SAMPLE_FILE_NAME);// upload for test
+		awsS3IamService.deleteObject(AWS_S3_BUCKET, SAMPLE_FILE_NAME);
+		final GetObjectRequest getObjRequest = new GetObjectRequest(AWS_S3_BUCKET, SAMPLE_FILE_NAME);
 		awsS3IamService.getObject(getObjRequest); // should throw AmazonS3Exception
 	}
 
@@ -181,7 +218,7 @@ public class AwsS3IamServiceTest{
 	@Test
 	public void testDeleteObjects() throws Exception {
 		List<KeyVersion> keys = new ArrayList<KeyVersion>();
-		KeyVersion key1= new KeyVersion("TestPutObject.txt");
+		KeyVersion key1= new KeyVersion(SAMPLE_FILE_NAME);
 		KeyVersion key2= new KeyVersion("TestPutObject2.txt");
 		keys.add(key1);
 		keys.add(key2);
@@ -191,14 +228,43 @@ public class AwsS3IamServiceTest{
 	}
 	
 	/**
-	 * Checks if is bucket exists test.
+	 * Test is bucket exists.
 	 *
 	 * @throws Exception the exception
 	 */
 	@Test
-	public void isBucketExistsTest()throws Exception {
+	public void testIsBucketExists()throws Exception {
+		Bucket bucket = awsS3IamService.createBucket(AWS_S3_BUCKET);
+		assertNotNull(bucket);
+		assertEquals(AWS_S3_BUCKET, bucket.getName());
 		boolean isBucketExist = awsS3IamService.isBucketExists(AWS_S3_BUCKET);
 		assertEquals(true,isBucketExist);
+	}
+		
+	/**
+	 * Test generate object url as string.
+	 *
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
+	@Test
+	public void testGenerateObjectUrlAsString() throws IOException {
+		String url = awsS3IamService.generateObjectUrlAsString(AWS_S3_BUCKET, SAMPLE_FILE_NAME);
+		assertEquals(true,!StringUtils.isNullOrEmpty(url));
+		assertEquals(true,url.contains(AWS_S3_BUCKET+".s3.amazonaws.com"));
+		assertEquals(true,url.contains(SAMPLE_FILE_NAME));
+	}
+	
+	/**
+	 * Test generate object url.
+	 *
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
+	@Test
+	public void testGenerateObjectURL() throws IOException {
+		URL url = awsS3IamService.generateObjectURL(AWS_S3_BUCKET, SAMPLE_FILE_NAME);
+		assertEquals(true, url != null);
+		assertEquals(true,url.getHost().contains(AWS_S3_BUCKET+".s3.amazonaws.com"));
+		assertEquals(true,url.getPath().contains(SAMPLE_FILE_NAME));
 	}
 	
 	/**
@@ -213,8 +279,7 @@ public class AwsS3IamServiceTest{
 				.getResourceAsStream("/sample-file/TestPutObject.txt");
 		return awsS3IamService.uploadObject(AWS_S3_BUCKET,key,inStream);
 	}
-	
-	
+		
 	/**
 	 * Tear down.
 	 */
@@ -223,8 +288,8 @@ public class AwsS3IamServiceTest{
 		try {
 			// Delete test buckets
 			awsS3IamService.cleanAndDeleteBucket(AWS_S3_BUCKET);
-		} catch (Exception ex) {
-			System.out.println("[INFO] TearDown: "+ex.getMessage());
+		} catch (Exception excp) {
+			System.out.println("[INFO] TearDown: "+excp.getMessage());
 		}
 	}
 }

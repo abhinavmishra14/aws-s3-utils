@@ -7,8 +7,10 @@ package com.abhinav.aws.s3.service.impl;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -20,18 +22,24 @@ import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.event.ProgressEvent;
+import com.amazonaws.event.ProgressListener;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.DeleteObjectsRequest;
 import com.amazonaws.services.s3.model.DeleteObjectsRequest.KeyVersion;
 import com.amazonaws.services.s3.model.DeleteObjectsResult;
+import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectResult;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
+import com.amazonaws.services.s3.transfer.Transfer;
+import com.amazonaws.services.s3.transfer.TransferManager;
+import com.amazonaws.services.s3.transfer.Upload;
 
 /**
  * The Class AwsS3IamServiceImpl.
@@ -100,7 +108,7 @@ public class AwsS3IamServiceImpl implements AwsS3IamService {
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("AwsS3IamService is initializing using IAM Role..");
 		}
-		// create a client connection based on iam role assigned
+		// create a client connection based on IAM role assigned
 		s3client = new AmazonS3Client();
 	}
 
@@ -109,7 +117,7 @@ public class AwsS3IamServiceImpl implements AwsS3IamService {
 	 * @see com.abhinav.aws.s3.service.AwsS3IamService#getAllBuckets()
 	 */
 	@Override
-	public List<Bucket> getAllBuckets() throws AmazonClientException, AmazonServiceException {
+	public List<Bucket> getAllBuckets() throws AmazonServiceException {
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("getAllBuckets invoked..");
 		}
@@ -121,7 +129,7 @@ public class AwsS3IamServiceImpl implements AwsS3IamService {
 	 * @see com.abhinav.aws.s3.service.AwsS3IamService#createBucket(java.lang.String)
 	 */
 	@Override
-	public Bucket createBucket(final String bucketName) throws AmazonClientException, AmazonServiceException {
+	public Bucket createBucket(final String bucketName) throws AmazonServiceException {
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("createBucket invoked..");
 		}
@@ -133,7 +141,7 @@ public class AwsS3IamServiceImpl implements AwsS3IamService {
 	 * @see com.abhinav.aws.s3.service.AwsS3IamService#deleteBucket(java.lang.String)
 	 */
 	@Override
-	public void deleteBucket(final String bucketName) throws AmazonClientException, AmazonServiceException {
+	public void deleteBucket(final String bucketName) throws AmazonServiceException {
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("deleteBucket invoked..");
 		}
@@ -145,8 +153,7 @@ public class AwsS3IamServiceImpl implements AwsS3IamService {
 	 * @see com.abhinav.aws.s3.service.AwsS3IamService#uploadObject(com.amazonaws.services.s3.model.PutObjectRequest)
 	 */
 	@Override
-	public PutObjectResult uploadObject(final PutObjectRequest putObjectRequest)
-			throws AmazonClientException, AmazonServiceException {
+	public PutObjectResult uploadObject(final PutObjectRequest putObjectRequest) throws AmazonServiceException {
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("uploadObject invoked..");
 		}
@@ -162,31 +169,156 @@ public class AwsS3IamServiceImpl implements AwsS3IamService {
 	 */
 	@Override
 	public PutObjectResult uploadObject(final String bucketName, final String fileName, final InputStream inputStream)
-			throws AmazonClientException, AmazonServiceException, IOException {
-		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug("uploadObject invoked, bucketName: {} , fileName: {} ", bucketName, fileName);
-		}
+			throws AmazonServiceException, IOException {
+		LOGGER.info("uploadObject invoked, bucketName: {} , fileName: {} ", bucketName, fileName);
 		File tempFile = null;
 		PutObjectRequest putObjectRequest = null;
 		PutObjectResult uploadResult = null;
 		try {
-			// Create temp file from stream to avoid 'out of memory' exception
+			// Create temporary file from stream to avoid 'out of memory' exception
 			tempFile = AWSUtil.createTempFileFromStream(inputStream);
 			putObjectRequest = new PutObjectRequest(bucketName, fileName, tempFile);
 			uploadResult = uploadObject(putObjectRequest);
 		} finally {
-			AWSUtil.deleteTempFile(tempFile); // delete temp file once uploaded
+			AWSUtil.deleteTempFile(tempFile); // Delete the temporary file once uploaded
 		}
 		return uploadResult;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.abhinav.aws.s3.service.AwsS3IamService#uploadObjectAndListenProgress(java.lang.String, java.lang.String, java.io.InputStream)
+	 */
+	@Override
+	public boolean uploadObjectAndListenProgress(final String bucketName, final String fileName,
+			final InputStream inputStream) throws AmazonServiceException, IOException {
+		LOGGER.info("uploadObjectAndListenProgress invoked, bucketName: {} , fileName: {} ", bucketName, fileName);
+		File tempFile = null;
+		PutObjectRequest putObjectRequest = null;
+		Upload upload = null;
+		try {
+			// Create temporary file from stream to avoid 'out of memory' exception
+			tempFile = AWSUtil.createTempFileFromStream(inputStream);
+			putObjectRequest = new PutObjectRequest(bucketName, fileName, tempFile);
+			final TransferManager transferMgr = new TransferManager(s3client);
+			upload = transferMgr.upload(putObjectRequest);
+			// You can poll your transfer's status to check its progress
+			if (upload.isDone() == false) {
+				LOGGER.info("Transfer: {}  - State: {} - Progress (%): {}", upload.getDescription(),
+						upload.getState(), upload.getProgress().getPercentTransferred());
+			}
+			 
+			// Add progressListener to listen asynchronous notifications about your transfer's progress
+			upload.addProgressListener(new ProgressListener() {
+				public void progressChanged(ProgressEvent event) {
+					if (LOGGER.isDebugEnabled()) {
+						LOGGER.debug("Transferred bytes: " + (long) event.getBytesTransferred());
+					}
+	             }
+			});
+		
+			try {
+				//Block the current thread and wait for completion
+				//If the transfer fails AmazonClientException will be thrown
+				upload.waitForCompletion();
+			} catch (AmazonClientException | InterruptedException excp) {
+				LOGGER.error("Exception occured while waiting for transfer: ",excp);
+			}
+			 
+			//Shutdown to release the resources after completion
+			transferMgr.shutdownNow();
+		} finally {
+			AWSUtil.deleteTempFile(tempFile); // Delete the temporary file once uploaded
+		}
+		LOGGER.info("Upload Status (%): "+upload.getProgress().getPercentTransferred());
+		return upload.isDone();
+	}
+	
+	/* (non-Javadoc)
+	 * @see com.abhinav.aws.s3.service.AwsS3IamService#uploadFileAsync(java.lang.String, java.lang.String, java.io.File)
+	 */
+	@Override
+	public Upload uploadFileAsync(final String bucketName, final String fileName, final File fileObj)
+			throws AmazonServiceException, IOException {
+		LOGGER.info("uploadObjectAsync invoked, bucketName: {} , fileName: {} ", bucketName, fileName);
+		final PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, fileName, fileObj);
+		final TransferManager trMgr = new TransferManager(s3client);
+		return trMgr.upload(putObjectRequest);
+	}
+
+	
+	/* (non-Javadoc)
+	 * @see com.abhinav.aws.s3.service.AwsS3IamService#uploadDirectoryOrFileAndWaitForCompletion(java.lang.String, java.io.File, java.lang.String)
+	 */
+	@Override
+	public boolean uploadDirectoryOrFileAndListenProgress(final String bucketName, final File source,
+			final String virtualDirectoryKeyPrefix) throws AmazonServiceException, FileNotFoundException {
+		LOGGER.info("uploadDirectoryOrFileAndWaitForCompletion invoked, bucketName: {} , Source: {} ", bucketName, source.getAbsolutePath());
+		Transfer transfer = null;
+		final TransferManager transferMgr = new TransferManager(s3client);
+		if (source.isFile()) {
+			transfer = transferMgr.upload(bucketName,source.getPath(),source);
+		} else if (source.isDirectory()) {
+			//upload recursively
+			transfer = transferMgr.uploadDirectory(bucketName, virtualDirectoryKeyPrefix, source, true);
+		} else {
+			throw new FileNotFoundException("File is neither a regular file nor a directory " + source);
+		}
+		
+		// You can poll your transfer's status to check its progress
+		if (transfer.isDone() == false) {
+			LOGGER.info("Transfer: {}  - State: {} - Progress (%): {}", transfer.getDescription(),
+					transfer.getState(), transfer.getProgress().getPercentTransferred());
+		}
+		 
+		// Add progressListener to listen asynchronous notifications about your transfer's progress
+		transfer.addProgressListener(new ProgressListener() {
+			public void progressChanged(ProgressEvent event) {
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug("Transferred bytes: " + (long) event.getBytesTransferred());
+				}
+             }
+		});
+	
+		try {
+			//Block the current thread and wait for completion
+			//If the transfer fails AmazonClientException will be thrown
+			transfer.waitForCompletion();
+		} catch (AmazonClientException | InterruptedException excp) {
+			LOGGER.error("Exception occured while waiting for transfer: ",excp);
+		}
+		 
+		//Shutdown to release the resources after completion
+		transferMgr.shutdownNow();
+		LOGGER.info("Upload Status (%): "+transfer.getProgress().getPercentTransferred());
+		return transfer.isDone();
+	}
+
+	
+	/* (non-Javadoc)
+	 * @see com.abhinav.aws.s3.service.AwsS3IamService#uploadDirectoryOrFile(java.lang.String, java.io.File, java.lang.String)
+	 */
+	@Override
+	public Transfer uploadDirectoryOrFile(final String bucketName, final File source,
+			final String virtualDirectoryKeyPrefix) throws AmazonServiceException, IOException {
+		LOGGER.info("uploadDirectoryOrFile invoked, bucketName: {} , Source: {} ", bucketName, source.getAbsolutePath());
+		Transfer transfer = null;
+		final TransferManager trMgr = new TransferManager(s3client);
+		if (source.isFile()) {
+			transfer = trMgr.upload(bucketName,source.getPath(),source);
+		} else if (source.isDirectory()) {
+			//upload recursively
+			transfer = trMgr.uploadDirectory(bucketName, virtualDirectoryKeyPrefix, source, true);
+		} else {
+			throw new FileNotFoundException("File is neither a regular file nor a directory " + source);
+		}
+		return transfer;
+	}
 	
 	/* (non-Javadoc)
 	 * @see com.abhinav.aws.s3.service.AwsS3IamService#getObject(com.amazonaws.services.s3.model.GetObjectRequest)
 	 */
 	@Override
-	public S3Object getObject(final GetObjectRequest getObjRequest)
-			throws AmazonClientException, AmazonServiceException {
+	public S3Object getObject(final GetObjectRequest getObjRequest) throws AmazonServiceException {
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("getObject invoked..");
 		}
@@ -198,11 +330,8 @@ public class AwsS3IamServiceImpl implements AwsS3IamService {
 	 * @see com.abhinav.aws.s3.service.AwsS3IamService#getObject(java.lang.String, java.lang.String)
 	 */
 	@Override
-	public InputStream getObject(final String bucketName, final String key)
-			throws AmazonClientException, AmazonServiceException {
-		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug("getObject invoked, bucketName: {}, key: {} ", bucketName, key);
-		}
+	public InputStream getObject(final String bucketName, final String key) throws AmazonServiceException {
+		LOGGER.info("getObject invoked, bucketName: {}, key: {} ", bucketName, key);
 		final GetObjectRequest getObjRequest = new GetObjectRequest(bucketName, key);
 		final S3Object s3Object = getObject(getObjRequest);
 		return s3Object.getObjectContent();
@@ -214,10 +343,8 @@ public class AwsS3IamServiceImpl implements AwsS3IamService {
 	 */
 	@Override
 	public ObjectMetadata downloadObject(final String bucketName, final String key, final String filePath)
-			throws AmazonClientException, AmazonServiceException {
-		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug("downloadObject invoked, bucketName: {}, key: {}, filePath: {} ", bucketName, key, filePath);
-		}
+			throws AmazonServiceException {
+		LOGGER.info("downloadObject invoked, bucketName: {}, key: {}, filePath: {} ", bucketName, key, filePath);
 		final GetObjectRequest getObjRequest = new GetObjectRequest(bucketName, key);
 		return s3client.getObject(getObjRequest, new File(filePath));
 	}
@@ -228,14 +355,11 @@ public class AwsS3IamServiceImpl implements AwsS3IamService {
 	 */
 	@Override
 	public PutObjectResult createDirectory(final String bucketName, final String dirName)
-			throws AmazonClientException, AmazonServiceException {
-		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug("createDirectory invoked, bucketName: {}, dirName: {} ", bucketName, dirName);
-		}
+			throws AmazonServiceException {
+		LOGGER.info("createDirectory invoked, bucketName: {}, dirName: {} ", bucketName, dirName);
 		final ObjectMetadata metadata = new ObjectMetadata();
 		metadata.setContentLength(0);
-		// Create empty content,since creating empty folder needs an empty
-		// content
+		// Create empty content,since creating empty folder needs an empty content
 		final InputStream emptyContent = new ByteArrayInputStream(new byte[0]);
 		// Create a PutObjectRequest passing the directory name suffixed by '/'
 		final PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, dirName + SEPARATOR, emptyContent,
@@ -248,11 +372,8 @@ public class AwsS3IamServiceImpl implements AwsS3IamService {
 	 * @see com.abhinav.aws.s3.service.AwsS3IamService#deleteObject(java.lang.String, java.lang.String)
 	 */
 	@Override
-	public void deleteObject(final String bucketName, final String fileName)
-			throws AmazonClientException, AmazonServiceException {
-		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug("deleteObject invoked, bucketName: {}, fileName: {} ", bucketName, fileName);
-		}
+	public void deleteObject(final String bucketName, final String fileName) throws AmazonServiceException {
+		LOGGER.info("deleteObject invoked, bucketName: {}, fileName: {} ", bucketName, fileName);
 		s3client.deleteObject(bucketName, fileName);
 	}
 
@@ -262,7 +383,7 @@ public class AwsS3IamServiceImpl implements AwsS3IamService {
 	 */
 	@Override
 	public DeleteObjectsResult deleteObjects(final String bucketName, final List<KeyVersion> keys)
-			throws AmazonClientException, AmazonServiceException {
+			throws AmazonServiceException {
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("deleteObjects invoked, bucketName: {}, keys: {} ", bucketName, keys);
 		}
@@ -276,11 +397,8 @@ public class AwsS3IamServiceImpl implements AwsS3IamService {
 	 * @see com.abhinav.aws.s3.service.AwsS3IamService#deleteDirectory(java.lang.String, java.lang.String)
 	 */
 	@Override
-	public void deleteDirectory(final String bucketName, final String dirName)
-			throws AmazonClientException, AmazonServiceException {
-		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug("deleteDirectory invoked, bucketName: {}, dirName: {} ", bucketName, dirName);
-		}
+	public void deleteDirectory(final String bucketName, final String dirName) throws AmazonServiceException {
+		LOGGER.info("deleteDirectory invoked, bucketName: {}, dirName: {} ", bucketName, dirName);
 		final List<S3ObjectSummary> listOfFiles = s3client.listObjects(bucketName, dirName).getObjectSummaries();
 		for (final S3ObjectSummary eachFile : listOfFiles) {
 			s3client.deleteObject(bucketName, eachFile.getKey());
@@ -293,10 +411,8 @@ public class AwsS3IamServiceImpl implements AwsS3IamService {
 	 * @see com.abhinav.aws.s3.service.AwsS3IamService#cleanAndDeleteBucket(java.lang.String)
 	 */
 	@Override
-	public void cleanAndDeleteBucket(final String bucketName) throws AmazonClientException, AmazonServiceException {
-		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug("cleanAndDeleteBucket invoked, bucketName: {} ", bucketName);
-		}
+	public void cleanAndDeleteBucket(final String bucketName) throws AmazonServiceException {
+		LOGGER.info("cleanAndDeleteBucket invoked, bucketName: {} ", bucketName);
 		final List<S3ObjectSummary> listOfFiles = s3client.listObjects(bucketName).getObjectSummaries();
 		for (final S3ObjectSummary eachFile : listOfFiles) {
 			s3client.deleteObject(bucketName, eachFile.getKey());
@@ -308,8 +424,28 @@ public class AwsS3IamServiceImpl implements AwsS3IamService {
 	 * @see com.abhinav.aws.s3.service.AwsS3IamService#isBucketExists(java.lang.String)
 	 */
 	@Override
-	public boolean isBucketExists(final String bucketName)
-			throws AmazonClientException, AmazonServiceException {
+	public boolean isBucketExists(final String bucketName) throws AmazonServiceException {
 		return s3client.doesBucketExist(bucketName);
+	}
+
+	/* (non-Javadoc)
+	 * @see com.abhinav.aws.s3.service.AwsS3IamService#generateObjectUrlAsString(java.lang.String, java.lang.String)
+	 */
+	@Override
+	public String generateObjectUrlAsString(final String bucketName, final String fileName) throws AmazonClientException {
+		LOGGER.info("generateObjectUrlAsString invoked, bucketName: {}, fileName: {} ", bucketName, fileName);
+		return generateObjectURL(bucketName,fileName).toString();
+	}
+
+	/* (non-Javadoc)
+	 * @see com.abhinav.aws.s3.service.AwsS3IamService#generateObjectURL(java.lang.String, java.lang.String)
+	 */
+	@Override
+	public URL generateObjectURL(final String bucketName, final String fileName) throws AmazonClientException {
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("generateObjectURL invoked, bucketName: {}, fileName: {} ", bucketName, fileName);
+		}
+		final GeneratePresignedUrlRequest presignedUrlReq = new GeneratePresignedUrlRequest(bucketName, fileName);
+		return s3client.generatePresignedUrl(presignedUrlReq);
 	}
 }

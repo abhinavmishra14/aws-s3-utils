@@ -241,8 +241,8 @@ public class AwsS3IamServiceImpl implements AwsS3IamService {
 			throws AmazonServiceException, IOException {
 		LOGGER.info("uploadObjectAsync invoked, bucketName: {} , fileName: {} ", bucketName, fileName);
 		final PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, fileName, fileObj);
-		final TransferManager trMgr = new TransferManager(s3client);
-		return trMgr.upload(putObjectRequest);
+		final TransferManager transferMgr = new TransferManager(s3client);
+		return transferMgr.upload(putObjectRequest);
 	}
 
 	
@@ -252,7 +252,8 @@ public class AwsS3IamServiceImpl implements AwsS3IamService {
 	@Override
 	public boolean uploadDirectoryOrFileAndListenProgress(final String bucketName, final File source,
 			final String virtualDirectoryKeyPrefix) throws AmazonServiceException, FileNotFoundException {
-		LOGGER.info("uploadDirectoryOrFileAndWaitForCompletion invoked, bucketName: {} , Source: {} ", bucketName, source.getAbsolutePath());
+		LOGGER.info("uploadDirectoryOrFileAndWaitForCompletion invoked, bucketName: {} , Source: {} ", bucketName,
+				source.getAbsolutePath());
 		Transfer transfer = null;
 		final TransferManager transferMgr = new TransferManager(s3client);
 		if (source.isFile()) {
@@ -300,16 +301,18 @@ public class AwsS3IamServiceImpl implements AwsS3IamService {
 	@Override
 	public Transfer uploadDirectoryOrFile(final String bucketName, final File source,
 			final String virtualDirectoryKeyPrefix) throws AmazonServiceException, IOException {
-		LOGGER.info("uploadDirectoryOrFile invoked, bucketName: {} , Source: {} ", bucketName, source.getAbsolutePath());
+		LOGGER.info("uploadDirectoryOrFile invoked, bucketName: {} , Source: {} ", bucketName,
+				source.getAbsolutePath());
 		Transfer transfer = null;
 		final TransferManager trMgr = new TransferManager(s3client);
 		if (source.isFile()) {
 			transfer = trMgr.upload(bucketName,source.getPath(),source);
 		} else if (source.isDirectory()) {
-			//upload recursively
+			//Upload recursively
+			//virtualDirectoryKeyPrefix could be virtual directory name inside the bucket
 			transfer = trMgr.uploadDirectory(bucketName, virtualDirectoryKeyPrefix, source, true);
 		} else {
-			throw new FileNotFoundException("File is neither a regular file nor a directory " + source);
+			throw new FileNotFoundException("Source is neither a regular file nor a directory " + source);
 		}
 		return transfer;
 	}

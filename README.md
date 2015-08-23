@@ -1,5 +1,6 @@
-# amazon-aws-s3-utils
-Utility to work with Amazon S3. This utility has features to access S3 using IAM role.
+# amazon-aws-utils
+Utility to work with Amazon Services. 
+I have added features to access S3 using IAM role as well as using access keys.
 
 
 ###Note: By default test cases will be skipped.

@@ -1,4 +1,4 @@
-# amazon-aws-utils
+# aws-s3-utils
 Utility to work with Amazon Services. 
 I have added features to access S3 using IAM role as well as using access keys.
 

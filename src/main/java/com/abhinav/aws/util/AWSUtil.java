@@ -44,10 +44,12 @@ public final class AWSUtil {
 	 * @param tempFile the temp file
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
-	public static void deleteTempFile(final File tempFile) throws IOException {
+	public static boolean deleteTempFile(final File tempFile) throws IOException {
+		boolean isDeleted = false;
 		if (tempFile != null && tempFile.exists()) {
-			tempFile.delete();
+			isDeleted = tempFile.delete();
 		}
+		return isDeleted;
 	}
 	
 	/**

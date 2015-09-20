@@ -24,10 +24,14 @@ import com.abhinav.aws.s3.service.impl.AwsS3IamServiceImpl;
 import com.abhinav.aws.util.AWSUtil;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.Bucket;
+import com.amazonaws.services.s3.model.CanonicalGrantee;
 import com.amazonaws.services.s3.model.DeleteObjectsRequest.KeyVersion;
 import com.amazonaws.services.s3.model.DeleteObjectsResult;
 import com.amazonaws.services.s3.model.GetObjectRequest;
+import com.amazonaws.services.s3.model.Grant;
+import com.amazonaws.services.s3.model.Grantee;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.Permission;
 import com.amazonaws.services.s3.model.PutObjectResult;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.transfer.Upload;
@@ -69,7 +73,35 @@ public class AwsS3IamServiceTest{
 		
 		awsS3IamService = new AwsS3IamServiceImpl();  
 	}
+	
+	/**
+	 * Test get bucket permissions.
+	 *
+	 * @throws Exception the exception
+	 */
+	@Test
+	public void testGetBucketPermissions() throws Exception{
+		//Create bucket for test 
+		awsS3IamService.createBucket(AWS_S3_BUCKET);
+		List<Grant> bucketAcl = awsS3IamService.getBucketPermissions(AWS_S3_BUCKET);	
+		assertEquals(true, Permission.FullControl.equals(bucketAcl.get(0).getPermission()));
+	}
 
+	/**
+	 * Test contains full control permission.
+	 *
+	 * @throws Exception the exception
+	 */
+	@Test
+	public void testContainsFullControlPermission() throws Exception{
+		//Mock grant list to test full control permission
+		List<Grant> grantList = new ArrayList<>();
+		grantList.add(new Grant((Grantee) new CanonicalGrantee("155545dadd"), Permission.Read));
+		grantList.add(new Grant((Grantee) new CanonicalGrantee("4545dadddda"), Permission.Write));
+		grantList.add(new Grant((Grantee) new CanonicalGrantee("adad44555445"), Permission.FullControl));
+		assertEquals(true, awsS3IamService.containsFullControlPermission(grantList));
+	}
+	
 	/**
 	 * Test method for {@link com.abhinav.aws.s3.service.AwsS3IamService#createBucket(java.lang.String)}.
 	 *
@@ -289,7 +321,7 @@ public class AwsS3IamServiceTest{
 			// Delete test buckets
 			awsS3IamService.cleanAndDeleteBucket(AWS_S3_BUCKET);
 		} catch (Exception excp) {
-			System.out.println("[INFO] TearDown: "+excp.getMessage());
+			System.out.println("TearDown: "+excp.getMessage());
 		}
 	}
 }

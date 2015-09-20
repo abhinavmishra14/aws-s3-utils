@@ -29,10 +29,10 @@ public class JetS3RESTServiceTest {
 	private static final String AWS_S3_BUCKET = "s3-publishing";
 	
 	/** The Constant AWS_ACCESS_KEY. */
-	private static final String AWS_ACCESS_KEY = "xxxxx";
+	private static final String AWS_ACCESS_KEY = "accessKey";
 	
 	/** The Constant AWS_SECRET_KEY. */
-	private static final String AWS_SECRET_KEY = "yyyyy";
+	private static final String AWS_SECRET_KEY = "secretKey";
 
 	/**
 	 * Sets the up.

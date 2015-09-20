@@ -131,7 +131,7 @@
 				</executions>
 			</plugin>
 
-			<!-- Java code coverage -->
+			<!-- Java code coverage, This plug-in will throw exception if unit test cases are skipped-->
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>

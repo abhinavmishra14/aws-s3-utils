@@ -200,7 +200,9 @@
 					<xmlOutput>true</xmlOutput>
 					<!-- Optional derectory to put findbugs xdoc xml report -->
 					<xmlOutputDirectory>target/findbugs</xmlOutputDirectory>
-					<failOnError>false</failOnError>
+					<!-- Reports all bugs (other values are medium and max) -->
+	                <threshold>medium</threshold>
+					<failOnError>true</failOnError>
 				</configuration>
 				<executions>
 					<execution>

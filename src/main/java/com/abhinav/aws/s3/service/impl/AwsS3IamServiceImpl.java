@@ -208,19 +208,20 @@ public class AwsS3IamServiceImpl implements AwsS3IamService {
 			upload = transferMgr.upload(putObjectRequest);
 			// You can poll your transfer's status to check its progress
 			if (upload.isDone() == false) {
-				LOGGER.info("Transfer: {}  - State: {} - Progress (%): {}", upload.getDescription(),
+				LOGGER.info("Start: {}  , State: {} and Progress (%): {}", upload.getDescription(),
 						upload.getState(), upload.getProgress().getPercentTransferred());
 			}
 			 
 			// Add progressListener to listen asynchronous notifications about your transfer's progress
-			upload.addProgressListener(new ProgressListener() {
+			// Uncomment below code snippet during development
+			/*upload.addProgressListener(new ProgressListener() {
 				public void progressChanged(ProgressEvent event) {
 					if (LOGGER.isDebugEnabled()) {
 						LOGGER.debug("Transferred bytes: " + (long) event.getBytesTransferred());
 					}
 	             }
-			});
-		
+			});*/
+							
 			try {
 				//Block the current thread and wait for completion
 				//If the transfer fails AmazonClientException will be thrown
@@ -228,13 +229,11 @@ public class AwsS3IamServiceImpl implements AwsS3IamService {
 			} catch (AmazonClientException | InterruptedException excp) {
 				LOGGER.error("Exception occured while waiting for transfer: ",excp);
 			}
-			 
-			//Shutdown to release the resources after completion
-			transferMgr.shutdownNow();
 		} finally {
 			AWSUtil.deleteTempFile(tempFile); // Delete the temporary file once uploaded
 		}
-		LOGGER.info("Upload Status (%): "+upload.getProgress().getPercentTransferred());
+		LOGGER.info("End: {} , State: {} , Progress (%): {}", upload.getDescription(),
+				upload.getState(), upload.getProgress().getPercentTransferred());
 		return upload.isDone();
 	}
 	
@@ -273,18 +272,20 @@ public class AwsS3IamServiceImpl implements AwsS3IamService {
 		
 		// You can poll your transfer's status to check its progress
 		if (transfer.isDone() == false) {
-			LOGGER.info("Transfer: {}  - State: {} - Progress (%): {}", transfer.getDescription(),
+			LOGGER.info("Start: {}  , State: {} and Progress (%): {}", transfer.getDescription(),
 					transfer.getState(), transfer.getProgress().getPercentTransferred());
+			
 		}
 		 
 		// Add progressListener to listen asynchronous notifications about your transfer's progress
-		transfer.addProgressListener(new ProgressListener() {
+		// Uncomment below code snippet during development
+		/*transfer.addProgressListener(new ProgressListener() {
 			public void progressChanged(ProgressEvent event) {
 				if (LOGGER.isDebugEnabled()) {
 					LOGGER.debug("Transferred bytes: " + (long) event.getBytesTransferred());
 				}
              }
-		});
+		});*/
 	
 		try {
 			//Block the current thread and wait for completion
@@ -294,9 +295,8 @@ public class AwsS3IamServiceImpl implements AwsS3IamService {
 			LOGGER.error("Exception occured while waiting for transfer: ",excp);
 		}
 		 
-		//Shutdown to release the resources after completion
-		transferMgr.shutdownNow();
-		LOGGER.info("Upload Status (%): "+transfer.getProgress().getPercentTransferred());
+		LOGGER.info("End: {} , State: {} , Progress (%): {}", transfer.getDescription(),
+				transfer.getState(), transfer.getProgress().getPercentTransferred());
 		return transfer.isDone();
 	}
 
@@ -500,12 +500,44 @@ public class AwsS3IamServiceImpl implements AwsS3IamService {
 	public boolean containsFullControlPermission(final List<Grant> grantList)
 			throws AmazonClientException, AmazonServiceException, AmazonS3Exception {
 		boolean containsFullControl = false;
-		for (Grant grant : grantList) {
+		for (final Grant grant : grantList) {
 			if(Permission.FullControl.equals(grant.getPermission())){
 				containsFullControl = true;
 				break;
 			}
 		}
 		return containsFullControl;
+	}
+	
+	/**
+	 * Checks if the grant list has full control permission <br/>
+	 * If access to the given bucket is not valid then 'AccessDenied' error will be raised.
+	 *
+	 * @param grantList the grant list
+	 * @return true, if successful
+	 * @throws AmazonClientException the amazon client exception
+	 * @throws AmazonServiceException the amazon service exception
+	 * @throws AmazonS3Exception the amazon s3 exception
+	 */
+	@Override
+	public boolean checkFullControlPermission(final String bucketName)
+			throws AmazonClientException, AmazonServiceException,
+			AmazonS3Exception {
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Checking permissions..");
+		}
+		boolean containsFullControlPermission = false;
+		final AccessControlList acl =  s3client.getBucketAcl(bucketName);
+		final List<Grant> grantList = acl.getGrantsAsList();
+		for (final Grant grant : grantList) {
+			if(Permission.FullControl.equals(grant.getPermission())){
+				containsFullControlPermission = true;
+				break;
+			}
+		}
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Permissions validated!");
+		}
+		return containsFullControlPermission;
 	}
 }

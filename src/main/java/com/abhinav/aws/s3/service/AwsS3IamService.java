@@ -352,10 +352,10 @@ public interface AwsS3IamService {
 			throws AmazonClientException, AmazonServiceException, AmazonS3Exception;
 	
 	/**
-	 * Checks if the grant list has full control permission <br/>
+	 * Checks if the bucket has full control permission <br/>
 	 * If access to the given bucket is not valid then 'AccessDenied' error will be raised.
 	 *
-	 * @param grantList the grant list
+	 * @param bucketName the bucket name
 	 * @return true, if successful
 	 * @throws AmazonClientException the amazon client exception
 	 * @throws AmazonServiceException the amazon service exception

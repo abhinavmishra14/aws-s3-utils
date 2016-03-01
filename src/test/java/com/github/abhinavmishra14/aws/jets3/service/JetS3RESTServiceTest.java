@@ -3,7 +3,7 @@
  * Copyright &copy; 2015. Abhinav Kumar Mishra. 
  * All rights reserved.
  */
-package com.abhinav.aws.jets3.service;
+package com.github.abhinavmishra14.aws.jets3.service;
 
 import static org.junit.Assert.assertEquals;
 
@@ -13,7 +13,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.abhinav.aws.jets3.service.impl.JetS3RESTServiceImpl;
+import com.github.abhinavmishra14.aws.jets3.service.impl.JetS3RESTServiceImpl;
 
 /**
  * The Class JetS3RESTServiceTest.

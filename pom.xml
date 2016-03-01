@@ -1,7 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.abhinav.aws</groupId>
+	<groupId>com.github.abhinavmishra14</groupId>
 	<artifactId>aws-s3-utils</artifactId>
 	<version>1.0</version>
 	<packaging>jar</packaging>
@@ -10,7 +10,7 @@
     <url>https://github.com/abhinavmishra14/amazon-aws-s3-utils</url>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<!-- Append copyright info into javadocs. -->
+		<!-- Append copyright info into java docs -->
 		<bottom>Copyright © 2015. Abhinav Kumar Mishra. All rights reserved.</bottom>
 		<skipTests>true</skipTests>
 	</properties>
@@ -26,7 +26,7 @@
 		<developer>
 			<name>Abhinav Kumar Mishra</name>
 			<email>abhinavmishra14@gmail.com</email>
-			<organizationUrl>https://github.com/abhinavmishra14/amazon-aws-s3-utils</organizationUrl>
+			<organizationUrl>http://javaworld-abhinav.blogspot.com</organizationUrl>
 		</developer>
 	</developers>
 

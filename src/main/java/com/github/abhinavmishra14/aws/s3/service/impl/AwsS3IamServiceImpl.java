@@ -3,7 +3,7 @@
  * Copyright &copy; 2015. Abhinav Kumar Mishra. 
  * All rights reserved.
  */
-package com.abhinav.aws.s3.service.impl;
+package com.github.abhinavmishra14.aws.s3.service.impl;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -16,14 +16,10 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.abhinav.aws.s3.service.AwsS3IamService;
-import com.abhinav.aws.util.AWSUtil;
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.event.ProgressEvent;
-import com.amazonaws.event.ProgressListener;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.AccessControlList;
@@ -44,6 +40,8 @@ import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.services.s3.transfer.Transfer;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.Upload;
+import com.github.abhinavmishra14.aws.s3.service.AwsS3IamService;
+import com.github.abhinavmishra14.aws.util.AWSUtil;
 
 /**
  * The Class AwsS3IamServiceImpl.
@@ -523,9 +521,7 @@ public class AwsS3IamServiceImpl implements AwsS3IamService {
 	public boolean checkFullControlPermission(final String bucketName)
 			throws AmazonClientException, AmazonServiceException,
 			AmazonS3Exception {
-		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug("Checking permissions..");
-		}
+		LOGGER.info("Checking permissions..");
 		boolean containsFullControlPermission = false;
 		final AccessControlList acl =  s3client.getBucketAcl(bucketName);
 		final List<Grant> grantList = acl.getGrantsAsList();
@@ -535,9 +531,7 @@ public class AwsS3IamServiceImpl implements AwsS3IamService {
 				break;
 			}
 		}
-		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug("Permissions validated!");
-		}
+		LOGGER.info("Permissions validated!");
 		return containsFullControlPermission;
 	}
 }

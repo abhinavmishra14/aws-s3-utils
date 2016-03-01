@@ -3,7 +3,7 @@
  * Copyright &copy; 2014-2015. Abhinav Kumar Mishra. 
  * All rights reserved.
  */
-package com.abhinav.aws.util;
+package com.github.abhinavmishra14.aws.util;
 
 import java.io.File;
 import java.io.IOException;

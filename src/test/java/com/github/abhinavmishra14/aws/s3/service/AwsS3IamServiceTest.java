@@ -4,7 +4,7 @@
  * All rights reserved.
  */
 
-package com.abhinav.aws.s3.service;
+package com.github.abhinavmishra14.aws.s3.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -20,8 +20,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.abhinav.aws.s3.service.impl.AwsS3IamServiceImpl;
-import com.abhinav.aws.util.AWSUtil;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.CanonicalGrantee;
@@ -36,6 +34,8 @@ import com.amazonaws.services.s3.model.PutObjectResult;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.transfer.Upload;
 import com.amazonaws.util.StringUtils;
+import com.github.abhinavmishra14.aws.s3.service.impl.AwsS3IamServiceImpl;
+import com.github.abhinavmishra14.aws.util.AWSUtil;
 
 /**
  * The Class AwsS3IamServiceTest.
@@ -170,6 +170,18 @@ public class AwsS3IamServiceTest{
 		assertEquals(true, buckets.size()>0);
 	}
 
+	/**
+	 * Test check full control permission.
+	 *
+	 * @throws Exception the exception
+	 */
+	@Test
+	public void testCheckFullControlPermission() throws Exception {
+		awsS3IamService.createBucket(AWS_S3_BUCKET);//create bucket for test 
+		boolean hasPermissions = awsS3IamService.checkFullControlPermission(AWS_S3_BUCKET);
+		assertEquals(true, hasPermissions);
+	}
+	
 	/**
 	 * Test method for {@link com.abhinav.aws.s3.service.AwsS3IamService#getObject(com.amazonaws.services.s3.model.GetObjectRequest)}.
 	 *

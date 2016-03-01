@@ -3,7 +3,7 @@
  * Copyright &copy; 2015. Abhinav Kumar Mishra. 
  * All rights reserved.
  */
-package com.abhinav.aws.s3.service;
+package com.github.abhinavmishra14.aws.s3.service;
 
 import java.io.File;
 import java.io.FileNotFoundException;

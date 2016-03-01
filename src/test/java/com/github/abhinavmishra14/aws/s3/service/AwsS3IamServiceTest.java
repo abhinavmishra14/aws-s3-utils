@@ -114,7 +114,7 @@ public class AwsS3IamServiceTest{
 	}
 	
 	/**
-	 * Test method for {@link com.abhinav.aws.s3.service.AwsS3IamService#createBucket(java.lang.String)}.
+	 * Test method for {@link com.github.abhinavmishra14.aws.s3.service.AwsS3IamService#createBucket(java.lang.String)}.
 	 *
 	 * @throws Exception the exception
 	 */
@@ -127,7 +127,7 @@ public class AwsS3IamServiceTest{
 	
 
     /**
-     * Test method for {@link com.abhinav.aws.s3.service.AwsS3IamService#uploadObject(java.lang.String, java.lang.String, java.io.InputStream, com.amazonaws.services.s3.model.ObjectMetadata)}.
+     * Test method for {@link com.github.abhinavmishra14.aws.s3.service.AwsS3IamService#uploadObject(java.lang.String, java.lang.String, java.io.InputStream)}.
      *
      * @throws Exception the exception
      */
@@ -170,7 +170,7 @@ public class AwsS3IamServiceTest{
 	}
 	
 	/**
-	 * Test method for {@link com.abhinav.aws.s3.service.impl.AwsS3IamServiceImpl#getAllBuckets()}.
+	 * Test method for {@link com.github.abhinavmishra14.aws.s3.service.impl.AwsS3IamServiceImpl#getAllBuckets()}.
 	 *
 	 * @throws Exception the exception
 	 */
@@ -194,7 +194,7 @@ public class AwsS3IamServiceTest{
 	}
 	
 	/**
-	 * Test method for {@link com.abhinav.aws.s3.service.AwsS3IamService#getObject(com.amazonaws.services.s3.model.GetObjectRequest)}.
+	 * Test method for {@link com.github.abhinavmishra14.aws.s3.service.AwsS3IamService#getObject(com.amazonaws.services.s3.model.GetObjectRequest)}.
 	 *
 	 * @throws Exception the exception
 	 */
@@ -209,7 +209,7 @@ public class AwsS3IamServiceTest{
 	}
 
 	/**
-	 * Test method for {@link com.abhinav.aws.s3.service.AwsS3IamService#getObject(String, String))}.
+	 * Test method for {@link com.github.abhinavmishra14.aws.s3.service.AwsS3IamService#getObject(java.lang.String, java.lang.String)}.
 	 *
 	 * @throws Exception the exception
 	 */
@@ -237,7 +237,7 @@ public class AwsS3IamServiceTest{
 	}
 		
 	/**
-	 * Test method for {@link com.abhinav.aws.s3.service.AwsS3IamService#createDirectory(com.amazonaws.services.s3.model.PutObjectRequest)}.
+	 * Test method for {@link com.github.abhinavmishra14.aws.s3.service.AwsS3IamService#createDirectory(java.lang.String, java.lang.String)}.
 	 *
 	 * @throws Exception the exception
 	 */
@@ -252,7 +252,7 @@ public class AwsS3IamServiceTest{
 	}
 
 	/**
-	 * Test method for {@link com.abhinav.aws.s3.service.AwsS3IamService#deleteObject(java.lang.String, java.lang.String)}.
+	 * Test method for {@link com.github.abhinavmishra14.aws.s3.service.AwsS3IamService#deleteObject(java.lang.String, java.lang.String)}.
 	 *
 	 * @throws Exception the exception
 	 */
@@ -266,7 +266,7 @@ public class AwsS3IamServiceTest{
 	}
 
 	/**
-	 * Test method for {@link com.abhinav.aws.s3.service.AwsS3IamService#deleteObjects(java.lang.String)}.
+	 * Test method for {@link com.github.abhinavmishra14.aws.s3.service.AwsS3IamService#deleteObjects(java.lang.String,java.util.List)}.
 	 *
 	 * @throws Exception the exception
 	 */

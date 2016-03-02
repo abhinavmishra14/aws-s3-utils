@@ -69,6 +69,18 @@ public interface AwsS3IamService {
 	 * @throws AmazonServiceException the amazon service exception
 	 */
 	Bucket createBucket(final String bucketName) throws AmazonClientException, AmazonServiceException;
+	
+	/**
+	 * Creates the bucket.<br/>
+	 * Permission set for a Bucket does NOT automatically propagate to files stored in that Bucket.
+	 *
+	 * @param bucketName the bucket name
+	 * @param isPublicAccessible the is public accessible
+	 * @return the bucket
+	 * @throws AmazonClientException the amazon client exception
+	 * @throws AmazonServiceException the amazon service exception
+	 */
+	Bucket createBucket(final String bucketName,final boolean isPublicAccessible) throws AmazonClientException, AmazonServiceException;
 
 	/**
 	 * Delete bucket.
@@ -105,13 +117,14 @@ public interface AwsS3IamService {
 	 * @param bucketName the bucket name
 	 * @param fileName the file name
 	 * @param inputStream the input stream
+	 * @param isPublicAccessible the is public accessible
 	 * @return the put object result
 	 * @throws AmazonClientException the amazon client exception
 	 * @throws AmazonServiceException the amazon service exception
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
-	PutObjectResult uploadObject(final String bucketName, final String fileName, final InputStream inputStream)
-			throws AmazonClientException, AmazonServiceException, IOException;
+	PutObjectResult uploadObject(final String bucketName, final String fileName, final InputStream inputStream,
+			final boolean isPublicAccessible) throws AmazonClientException, AmazonServiceException, IOException;
 
 	
 	/**
@@ -130,13 +143,14 @@ public interface AwsS3IamService {
 	 * @param bucketName the bucket name
 	 * @param fileName the file name
 	 * @param inputStream the input stream
+	 * @param isPublicAccessible the is public accessible
 	 * @return the boolean
 	 * @throws AmazonClientException the amazon client exception
 	 * @throws AmazonServiceException the amazon service exception
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
-	boolean uploadObjectAndListenProgress(final String bucketName, final String fileName, final InputStream inputStream)
-			throws AmazonClientException, AmazonServiceException, IOException;
+	boolean uploadObjectAndListenProgress(final String bucketName, final String fileName, final InputStream inputStream,
+			final boolean isPublicAccessible) throws AmazonClientException, AmazonServiceException, IOException;
 	
 	/**
 	 * Upload directory or file and Listen Progress.<br/>
@@ -161,7 +175,7 @@ public interface AwsS3IamService {
 	 */
 	boolean uploadDirectoryOrFileAndListenProgress(final String bucketName, final File source,
 			final String virtualDirectoryKeyPrefix)
-					throws AmazonClientException, AmazonServiceException, FileNotFoundException;
+			throws AmazonClientException, AmazonServiceException, FileNotFoundException;
 	
 	/**
 	 * Upload file async.<br/>
@@ -181,13 +195,14 @@ public interface AwsS3IamService {
 	 * @param bucketName the bucket name
 	 * @param fileName the file name
 	 * @param fileObj the file object
+	 * @param isPublicAccessible the is public accessible
 	 * @return the upload
 	 * @throws AmazonClientException the amazon client exception
 	 * @throws AmazonServiceException the amazon service exception
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
-	Upload uploadFileAsync(final String bucketName, final String fileName, final File fileObj)
-			throws AmazonClientException, AmazonServiceException, IOException;
+	Upload uploadFileAsync(final String bucketName, final String fileName, final File fileObj,
+			final boolean isPublicAccessible) throws AmazonClientException, AmazonServiceException, IOException;
 
 	/**
 	 * Upload directory or file.<br/>
@@ -255,11 +270,12 @@ public interface AwsS3IamService {
 	 *
 	 * @param bucketName the bucket name
 	 * @param dirName the dir name
+	 * @param isPublicAccessible the is public accessible
 	 * @return the put object result
 	 * @throws AmazonClientException the amazon client exception
 	 * @throws AmazonServiceException the amazon service exception
 	 */
-	PutObjectResult createDirectory(final String bucketName, final String dirName)
+	PutObjectResult createDirectory(final String bucketName, final String dirName, final boolean isPublicAccessible)
 			throws AmazonClientException, AmazonServiceException;
 
 	/**

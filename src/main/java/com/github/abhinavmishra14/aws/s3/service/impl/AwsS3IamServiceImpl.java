@@ -151,12 +151,23 @@ public class AwsS3IamServiceImpl implements AwsS3IamService {
 	}
 	
 	/* (non-Javadoc)
+	 * @see com.github.abhinavmishra14.aws.s3.service.AwsS3IamService#createBucket(java.lang.String, com.amazonaws.services.s3.model.CannedAccessControlList)
+	 */
+	@Override
+	public Bucket createBucket(final String bucketName, final CannedAccessControlList cannedAcl)
+			throws AmazonClientException, AmazonServiceException {
+		LOGGER.info("createBucket invoked, bucketName: {} and cannedAccessControlList: {}",bucketName,cannedAcl);
+		final CreateBucketRequest createBucketReq = new CreateBucketRequest(bucketName).withCannedAcl(cannedAcl);
+		return s3client.createBucket(createBucketReq);
+	}
+	
+	/* (non-Javadoc)
 	 * @see com.github.abhinavmishra14.aws.s3.service.AwsS3IamService#createBucket(java.lang.String, boolean)
 	 */
 	@Override
 	public Bucket createBucket(final String bucketName, final boolean isPublicAccessible)
 			throws AmazonClientException, AmazonServiceException {
-		LOGGER.info("createBucket invoked, isPublicAccessible: {}",isPublicAccessible);
+		LOGGER.info("createBucket invoked, bucketName: {} and isPublicAccessible: {}",bucketName,isPublicAccessible);
 		final CreateBucketRequest createBucketReq = new CreateBucketRequest(bucketName);
 		if(isPublicAccessible){
 		  createBucketReq.setCannedAcl(CannedAccessControlList.PublicRead);
@@ -170,11 +181,10 @@ public class AwsS3IamServiceImpl implements AwsS3IamService {
 	 */
 	@Override
 	public void deleteBucket(final String bucketName) throws AmazonClientException, AmazonServiceException {
-		LOGGER.info("deleteBucket invoked..");
+		LOGGER.info("deleteBucket invoked, bucketName: {}",bucketName);
 		s3client.deleteBucket(bucketName);
 	}
 
-	
 	/* (non-Javadoc)
 	 * @see com.abhinav.aws.s3.service.AwsS3IamService#uploadObject(com.amazonaws.services.s3.model.PutObjectRequest)
 	 */
@@ -185,6 +195,35 @@ public class AwsS3IamServiceImpl implements AwsS3IamService {
 		return s3client.putObject(putObjectRequest);
 	}
 
+	/* (non-Javadoc)
+	 * @see com.github.abhinavmishra14.aws.s3.service.AwsS3IamService#uploadObject(java.lang.String, java.lang.String, java.io.InputStream)
+	 */
+	@Override
+	public PutObjectResult uploadObject(final String bucketName, final String fileName, final InputStream inputStream)
+			throws AmazonClientException, AmazonServiceException, IOException {
+		return uploadObject(bucketName, fileName, inputStream, false);
+	}
+	
+	/* (non-Javadoc)
+	 * @see com.github.abhinavmishra14.aws.s3.service.AwsS3IamService#uploadObject(java.lang.String, java.lang.String, java.io.InputStream, com.amazonaws.services.s3.model.CannedAccessControlList)
+	 */
+	@Override
+	public PutObjectResult uploadObject(final String bucketName, final String fileName, final InputStream inputStream,
+			final CannedAccessControlList cannedAcl) throws AmazonClientException, AmazonServiceException, IOException {
+		LOGGER.info("uploadObject invoked, bucketName: {} , fileName: {}, cannedAccessControlList: {} ", bucketName, fileName, cannedAcl);
+		File tempFile = null;
+		PutObjectRequest putObjectRequest = null;
+		PutObjectResult uploadResult = null;
+		try {
+			// Create temporary file from stream to avoid 'out of memory' exception
+			tempFile = AWSUtil.createTempFileFromStream(inputStream);
+			putObjectRequest = new PutObjectRequest(bucketName, fileName, tempFile).withCannedAcl(cannedAcl);
+			uploadResult = uploadObject(putObjectRequest);
+		} finally {
+			AWSUtil.deleteTempFile(tempFile); // Delete the temporary file once uploaded
+		}
+		return uploadResult;
+	}
 	
 	/* (non-Javadoc)
 	 * @see com.github.abhinavmishra14.aws.s3.service.AwsS3IamService#uploadObject(java.lang.String, java.lang.String, java.io.InputStream, boolean)
@@ -192,7 +231,7 @@ public class AwsS3IamServiceImpl implements AwsS3IamService {
 	@Override
 	public PutObjectResult uploadObject(final String bucketName, final String fileName, final InputStream inputStream,
 			final boolean isPublicAccessible) throws AmazonClientException, AmazonServiceException, IOException {
-		LOGGER.info("uploadObject invoked, bucketName: {} , fileName: {} ", bucketName, fileName);
+		LOGGER.info("uploadObject invoked, bucketName: {} , fileName: {} and isPublicAccessible: {} ", bucketName, fileName, isPublicAccessible);
 		File tempFile = null;
 		PutObjectRequest putObjectRequest = null;
 		PutObjectResult uploadResult = null;
@@ -210,6 +249,62 @@ public class AwsS3IamServiceImpl implements AwsS3IamService {
 		return uploadResult;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.github.abhinavmishra14.aws.s3.service.AwsS3IamService#uploadObjectAndListenProgress(java.lang.String, java.lang.String, java.io.InputStream)
+	 */
+	@Override
+	public boolean uploadObjectAndListenProgress(final String bucketName, final String fileName,
+			final InputStream inputStream) throws AmazonClientException, AmazonServiceException, IOException {
+		return uploadObjectAndListenProgress(bucketName, fileName, inputStream, false);
+	}
+	
+	/* (non-Javadoc)
+	 * @see com.github.abhinavmishra14.aws.s3.service.AwsS3IamService#uploadObjectAndListenProgress(java.lang.String, java.lang.String, java.io.InputStream, com.amazonaws.services.s3.model.CannedAccessControlList)
+	 */
+	@Override
+	public boolean uploadObjectAndListenProgress(final String bucketName, final String fileName,
+			final InputStream inputStream, final CannedAccessControlList cannedAcl)
+			throws AmazonClientException, AmazonServiceException, IOException {
+		LOGGER.info("uploadObjectAndListenProgress invoked, bucketName: {} , fileName: {} and cannedAccessControlList: {} ", bucketName, fileName, cannedAcl);
+		File tempFile = null;
+		PutObjectRequest putObjectRequest = null;
+		Upload upload = null;
+		try {
+			// Create temporary file from stream to avoid 'out of memory' exception
+			tempFile = AWSUtil.createTempFileFromStream(inputStream);
+			putObjectRequest = new PutObjectRequest(bucketName, fileName, tempFile).withCannedAcl(cannedAcl);
+			final TransferManager transferMgr = new TransferManager(s3client);
+			upload = transferMgr.upload(putObjectRequest);
+			// You can poll your transfer's status to check its progress
+			if (upload.isDone()) {
+				LOGGER.info("Start: {}  , State: {} and Progress (%): {}", upload.getDescription(),
+						upload.getState(), upload.getProgress().getPercentTransferred());
+			}
+			 
+			// Add progressListener to listen asynchronous notifications about your transfer's progress
+			// Uncomment below code snippet during development
+			/*upload.addProgressListener(new ProgressListener() {
+				public void progressChanged(ProgressEvent event) {
+					if (LOGGER.isDebugEnabled()) {
+						LOGGER.debug("Transferred bytes: " + (long) event.getBytesTransferred());
+					}
+	             }
+			});*/
+							
+			try {
+				//Block the current thread and wait for completion
+				//If the transfer fails AmazonClientException will be thrown
+				upload.waitForCompletion();
+			} catch (AmazonClientException | InterruptedException excp) {
+				LOGGER.error("Exception occured while waiting for transfer: ",excp);
+			}
+		} finally {
+			AWSUtil.deleteTempFile(tempFile); // Delete the temporary file once uploaded
+		}
+		LOGGER.info("End: {} , State: {} , Progress (%): {}", upload.getDescription(),
+				upload.getState(), upload.getProgress().getPercentTransferred());
+		return upload.isDone();
+	}
 	
 	/* (non-Javadoc)
 	 * @see com.github.abhinavmishra14.aws.s3.service.AwsS3IamService#uploadObjectAndListenProgress(java.lang.String, java.lang.String, java.io.InputStream, boolean)
@@ -218,7 +313,7 @@ public class AwsS3IamServiceImpl implements AwsS3IamService {
 	public boolean uploadObjectAndListenProgress(final String bucketName, final String fileName,
 			final InputStream inputStream, final boolean isPublicAccessible)
 			throws AmazonClientException, AmazonServiceException, IOException {
-		LOGGER.info("uploadObjectAndListenProgress invoked, bucketName: {} , fileName: {} ", bucketName, fileName);
+		LOGGER.info("uploadObjectAndListenProgress invoked, bucketName: {} , fileName: {} and isPublicAccessible: {} ", bucketName, fileName, isPublicAccessible);
 		File tempFile = null;
 		PutObjectRequest putObjectRequest = null;
 		Upload upload = null;
@@ -264,12 +359,33 @@ public class AwsS3IamServiceImpl implements AwsS3IamService {
 	
 	
 	/* (non-Javadoc)
+	 * @see com.github.abhinavmishra14.aws.s3.service.AwsS3IamService#uploadFileAsync(java.lang.String, java.lang.String, java.io.File)
+	 */
+	@Override
+	public Upload uploadFileAsync(final String bucketName, final String fileName, final File fileObj)
+			throws AmazonClientException, AmazonServiceException, IOException {
+		return uploadFileAsync(bucketName, fileName, fileObj, false);
+	}
+	
+	/* (non-Javadoc)
+	 * @see com.github.abhinavmishra14.aws.s3.service.AwsS3IamService#uploadFileAsync(java.lang.String, java.lang.String, java.io.File, com.amazonaws.services.s3.model.CannedAccessControlList)
+	 */
+	@Override
+	public Upload uploadFileAsync(final String bucketName, final String fileName, final File fileObj,
+			final CannedAccessControlList cannedAcl) throws AmazonClientException, AmazonServiceException, IOException {
+		LOGGER.info("uploadObjectAsync invoked, bucketName: {} , fileName: {} and cannedAccessControlList: {} ", bucketName, fileName, cannedAcl);
+		final PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, fileName, fileObj).withCannedAcl(cannedAcl);
+		final TransferManager transferMgr = new TransferManager(s3client);
+		return transferMgr.upload(putObjectRequest);
+	}
+	
+	/* (non-Javadoc)
 	 * @see com.github.abhinavmishra14.aws.s3.service.AwsS3IamService#uploadFileAsync(java.lang.String, java.lang.String, java.io.File, boolean)
 	 */
 	@Override
 	public Upload uploadFileAsync(final String bucketName, final String fileName, final File fileObj,
 			final boolean isPublicAccessible) throws AmazonClientException, AmazonServiceException, IOException {
-		LOGGER.info("uploadObjectAsync invoked, bucketName: {} , fileName: {} ", bucketName, fileName);
+		LOGGER.info("uploadObjectAsync invoked, bucketName: {} , fileName: {} and isPublicAccessible: {} ", bucketName, fileName, isPublicAccessible);
 		final PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, fileName, fileObj);
 		if(isPublicAccessible){
 		  putObjectRequest.setCannedAcl(CannedAccessControlList.PublicRead);
@@ -388,12 +504,38 @@ public class AwsS3IamServiceImpl implements AwsS3IamService {
 	}
 
 	/* (non-Javadoc)
+	 * @see com.github.abhinavmishra14.aws.s3.service.AwsS3IamService#createDirectory(java.lang.String, java.lang.String)
+	 */
+	@Override
+	public PutObjectResult createDirectory(final String bucketName, final String dirName)
+			throws AmazonClientException, AmazonServiceException {
+		return createDirectory(bucketName, dirName,false);
+	}
+	
+	/* (non-Javadoc)
+	 * @see com.github.abhinavmishra14.aws.s3.service.AwsS3IamService#createDirectory(java.lang.String, java.lang.String, com.amazonaws.services.s3.model.CannedAccessControlList)
+	 */
+	@Override
+	public PutObjectResult createDirectory(final String bucketName, final String dirName, final CannedAccessControlList cannedAcl)
+			throws AmazonClientException, AmazonServiceException {
+		LOGGER.info("createDirectory invoked, bucketName: {}, dirName: {} and cannedAccessControlList: {}  ", bucketName, dirName, cannedAcl);
+		final ObjectMetadata metadata = new ObjectMetadata();
+		metadata.setContentLength(0);
+		// Create empty content,since creating empty folder needs an empty content
+		final InputStream emptyContent = new ByteArrayInputStream(new byte[0]);
+		// Create a PutObjectRequest passing the directory name suffixed by '/'
+		final PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, dirName + SEPARATOR, emptyContent,
+				metadata).withCannedAcl(cannedAcl);
+		return s3client.putObject(putObjectRequest);
+	}
+	
+	/* (non-Javadoc)
 	 * @see com.github.abhinavmishra14.aws.s3.service.AwsS3IamService#createDirectory(java.lang.String, java.lang.String, boolean)
 	 */
 	@Override
 	public PutObjectResult createDirectory(final String bucketName, final String dirName,
 			final boolean isPublicAccessible) throws AmazonClientException, AmazonServiceException {
-		LOGGER.info("createDirectory invoked, bucketName: {}, dirName: {} ", bucketName, dirName);
+		LOGGER.info("createDirectory invoked, bucketName: {}, dirName: {} and isPublicAccessible: {}", bucketName, dirName, isPublicAccessible);
 		final ObjectMetadata metadata = new ObjectMetadata();
 		metadata.setContentLength(0);
 		// Create empty content,since creating empty folder needs an empty content
@@ -406,7 +548,6 @@ public class AwsS3IamServiceImpl implements AwsS3IamService {
 		}
 		return s3client.putObject(putObjectRequest);
 	}
-
 	
 	/* (non-Javadoc)
 	 * @see com.abhinav.aws.s3.service.AwsS3IamService#deleteObject(java.lang.String, java.lang.String)

@@ -29,6 +29,7 @@ import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.model.AccessControlList;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.Bucket;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.DeleteObjectsRequest.KeyVersion;
 import com.amazonaws.services.s3.model.DeleteObjectsResult;
 import com.amazonaws.services.s3.model.GetObjectRequest;
@@ -61,18 +62,47 @@ public interface AwsS3IamService {
 	List<Bucket> getAllBuckets() throws AmazonClientException, AmazonServiceException;
 
 	/**
-	 * Creates the bucket.
+	 * Creates the bucket.<br/>
+	 * A bucket is owned by the AWS account that created it. By default, you can
+	 * create up to 100 buckets in each of your AWS accounts. If you need
+	 * additional buckets, you can increase your bucket limit by submitting a
+	 * service limit increase.
 	 *
-	 * @param bucketName the bucket name
+	 * @param bucketName
+	 *            the bucket name
 	 * @return the bucket
-	 * @throws AmazonClientException the amazon client exception
-	 * @throws AmazonServiceException the amazon service exception
+	 * @throws AmazonClientException
+	 *             the amazon client exception
+	 * @throws AmazonServiceException
+	 *             the amazon service exception
 	 */
 	Bucket createBucket(final String bucketName) throws AmazonClientException, AmazonServiceException;
 	
 	/**
 	 * Creates the bucket.<br/>
-	 * Permission set for a Bucket does NOT automatically propagate to files stored in that Bucket.
+	 * A bucket is owned by the AWS account that created it. By default, you can
+	 * create up to 100 buckets in each of your AWS accounts. If you need
+	 * additional buckets, you can increase your bucket limit by submitting a
+	 * service limit increase.
+	 *
+	 * @param bucketName the bucket name
+	 * @param cannedAcl the canned acl
+	 * @return the bucket
+	 * @throws AmazonClientException the amazon client exception
+	 * @throws AmazonServiceException the amazon service exception
+	 * @see <a href="http://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html">ACL Overview</a>
+	 * @see <a href="http://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl">Canned ACL</a>
+	 */
+	Bucket createBucket(final String bucketName, final CannedAccessControlList cannedAcl)
+			throws AmazonClientException, AmazonServiceException;
+	
+	/**
+	 * Creates the bucket.<br/>
+	 * Permission set for a Bucket does NOT automatically propagate to files stored in that Bucket.<br/>
+	 * A bucket is owned by the AWS account that created it. By default, you can
+	 * create up to 100 buckets in each of your AWS accounts. If you need
+	 * additional buckets, you can increase your bucket limit by submitting a
+	 * service limit increase.
 	 *
 	 * @param bucketName the bucket name
 	 * @param isPublicAccessible the is public accessible
@@ -117,6 +147,38 @@ public interface AwsS3IamService {
 	 * @param bucketName the bucket name
 	 * @param fileName the file name
 	 * @param inputStream the input stream
+	 * @return the put object result
+	 * @throws AmazonClientException the amazon client exception
+	 * @throws AmazonServiceException the amazon service exception
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
+	PutObjectResult uploadObject(final String bucketName, final String fileName, final InputStream inputStream)
+			throws AmazonClientException, AmazonServiceException, IOException;
+	
+	/**
+	 * Upload object.
+	 *
+	 * @param bucketName the bucket name
+	 * @param fileName the file name
+	 * @param inputStream the input stream
+	 * @param cannedAcl the canned acl
+	 * @return the put object result
+	 * @throws AmazonClientException the amazon client exception
+	 * @throws AmazonServiceException the amazon service exception
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @see <a href="http://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html">ACL Overview</a>
+	 * @see <a href="http://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl">Canned ACL</a>
+	 */
+	PutObjectResult uploadObject(final String bucketName, final String fileName, final InputStream inputStream,
+			final CannedAccessControlList cannedAcl) throws AmazonClientException, AmazonServiceException, IOException;
+	
+	/**
+	 * Upload object.<br/>
+	 * You can pass true/false flag to allow objects pushed to S3 to be publicly accessible.
+	 *
+	 * @param bucketName the bucket name
+	 * @param fileName the file name
+	 * @param inputStream the input stream
 	 * @param isPublicAccessible the is public accessible
 	 * @return the put object result
 	 * @throws AmazonClientException the amazon client exception
@@ -139,6 +201,58 @@ public interface AwsS3IamService {
 	 * TransferManager attempts to use multiple threads to upload multiple parts
 	 * of a single upload at once. <br/> When dealing with large content sizes and
 	 * high bandwidth, this can have a significant increase on throughput.
+	 *
+	 * @param bucketName the bucket name
+	 * @param fileName the file name
+	 * @param inputStream the input stream
+	 * @return the boolean
+	 * @throws AmazonClientException the amazon client exception
+	 * @throws AmazonServiceException the amazon service exception
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
+	boolean uploadObjectAndListenProgress(final String bucketName, final String fileName, final InputStream inputStream)
+			throws AmazonClientException, AmazonServiceException, IOException;
+	
+	/**
+	 * Upload object and Listen progress.<br/> 
+	 * S3 will overwrite any existing objects that happen to have the same key,
+	 * just as when uploading individual files, so use with caution.<br/>
+	 * This method will upload the file to S3 and prints the progress.<br/>
+	 * It is implemented via {@link com.amazonaws.services.s3.transfer.TransferManager} <br/>
+	 * TransferManager provides a simple API for uploading content to Amazon S3,
+	 * and makes extensive use of Amazon S3 multipart uploads to achieve
+	 * enhanced throughput, performance and reliability. <br/>When possible,
+	 * TransferManager attempts to use multiple threads to upload multiple parts
+	 * of a single upload at once. <br/> When dealing with large content sizes and
+	 * high bandwidth, this can have a significant increase on throughput.
+	 *
+	 * @param bucketName the bucket name
+	 * @param fileName the file name
+	 * @param inputStream the input stream
+	 * @param cannedAcl the canned acl
+	 * @return the boolean
+	 * @throws AmazonClientException the amazon client exception
+	 * @throws AmazonServiceException the amazon service exception
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @see <a href="http://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html">ACL Overview</a>
+	 * @see <a href="http://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl">Canned ACL</a>
+	 */
+	boolean uploadObjectAndListenProgress(final String bucketName, final String fileName, final InputStream inputStream,
+			final CannedAccessControlList cannedAcl) throws AmazonClientException, AmazonServiceException, IOException;
+	
+	/**
+	 * Upload object and Listen progress.<br/> 
+	 * S3 will overwrite any existing objects that happen to have the same key,
+	 * just as when uploading individual files, so use with caution.<br/>
+	 * This method will upload the file to S3 and prints the progress.<br/>
+	 * It is implemented via {@link com.amazonaws.services.s3.transfer.TransferManager} <br/>
+	 * TransferManager provides a simple API for uploading content to Amazon S3,
+	 * and makes extensive use of Amazon S3 multipart uploads to achieve
+	 * enhanced throughput, performance and reliability. <br/>When possible,
+	 * TransferManager attempts to use multiple threads to upload multiple parts
+	 * of a single upload at once. <br/> When dealing with large content sizes and
+	 * high bandwidth, this can have a significant increase on throughput.<br/>
+	 * You can pass true/false flag to allow objects pushed to S3 to be publicly accessible.
 	 *
 	 * @param bucketName the bucket name
 	 * @param fileName the file name
@@ -191,6 +305,63 @@ public interface AwsS3IamService {
 	 * TransferManager attempts to use multiple threads to upload multiple parts
 	 * of a single upload at once. <br/> When dealing with large content sizes and
 	 * high bandwidth, this can have a significant increase on throughput.
+	 *
+	 * @param bucketName the bucket name
+	 * @param fileName the file name
+	 * @param fileObj the file object
+	 * @return the upload
+	 * @throws AmazonClientException the amazon client exception
+	 * @throws AmazonServiceException the amazon service exception
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
+	Upload uploadFileAsync(final String bucketName, final String fileName, final File fileObj)
+			throws AmazonClientException, AmazonServiceException, IOException;
+	
+	/**
+	 * Upload file async.<br/>
+	 * S3 will overwrite any existing objects that happen to have the same key,
+	 * just as when uploading individual files, so use with caution.<br/>
+	 * This method will upload the file to S3 asynchronously<br/>
+	 * You can use {@link com.amazonaws.services.s3.transfer.Upload} returning object to check for progress
+	 * Usage: <code>upload.getProgress().getPercentTransferred()</code><br/>
+	 * It is implemented via {@link com.amazonaws.services.s3.transfer.TransferManager} <br/>
+	 * TransferManager provides a simple API for uploading content to Amazon S3,
+	 * and makes extensive use of Amazon S3 multipart uploads to achieve
+	 * enhanced throughput, performance and reliability. <br/>When possible,
+	 * TransferManager attempts to use multiple threads to upload multiple parts
+	 * of a single upload at once. <br/> When dealing with large content sizes and
+	 * high bandwidth, this can have a significant increase on throughput.
+	 *
+	 * @param bucketName the bucket name
+	 * @param fileName the file name
+	 * @param fileObj the file object
+	 * @param cannedAcl the canned acl
+	 * @return the upload
+	 * @throws AmazonClientException the amazon client exception
+	 * @throws AmazonServiceException the amazon service exception
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 * @see <a href="http://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html">ACL Overview</a>
+	 * @see <a href="http://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl">Canned ACL</a>
+	 */
+	Upload uploadFileAsync(final String bucketName, final String fileName, final File fileObj,
+			final CannedAccessControlList cannedAcl) throws AmazonClientException, AmazonServiceException, IOException;
+	
+	
+	/**
+	 * Upload file async.<br/>
+	 * S3 will overwrite any existing objects that happen to have the same key,
+	 * just as when uploading individual files, so use with caution.<br/>
+	 * This method will upload the file to S3 asynchronously<br/>
+	 * You can use {@link com.amazonaws.services.s3.transfer.Upload} returning object to check for progress
+	 * Usage: <code>upload.getProgress().getPercentTransferred()</code><br/>
+	 * It is implemented via {@link com.amazonaws.services.s3.transfer.TransferManager} <br/>
+	 * TransferManager provides a simple API for uploading content to Amazon S3,
+	 * and makes extensive use of Amazon S3 multipart uploads to achieve
+	 * enhanced throughput, performance and reliability. <br/>When possible,
+	 * TransferManager attempts to use multiple threads to upload multiple parts
+	 * of a single upload at once. <br/> When dealing with large content sizes and
+	 * high bandwidth, this can have a significant increase on throughput.<br/>
+	 * You can pass true/false flag to allow objects pushed to S3 to be publicly accessible.
 	 *
 	 * @param bucketName the bucket name
 	 * @param fileName the file name
@@ -267,6 +438,34 @@ public interface AwsS3IamService {
 
 	/**
 	 * Creates the directory.
+	 *
+	 * @param bucketName the bucket name
+	 * @param dirName the dir name
+	 * @return the put object result
+	 * @throws AmazonClientException the amazon client exception
+	 * @throws AmazonServiceException the amazon service exception
+	 */
+	PutObjectResult createDirectory(final String bucketName, final String dirName)
+			throws AmazonClientException, AmazonServiceException;
+	
+	/**
+	 * Creates the directory.
+	 *
+	 * @param bucketName the bucket name
+	 * @param dirName the dir name
+	 * @param cannedAcl the canned acl
+	 * @return the put object result
+	 * @throws AmazonClientException the amazon client exception
+	 * @throws AmazonServiceException the amazon service exception
+	 * @see <a href="http://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html">ACL Overview</a>
+	 * @see <a href="http://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl">Canned ACL</a>
+	 */
+	PutObjectResult createDirectory(final String bucketName, final String dirName,
+			final CannedAccessControlList cannedAcl) throws AmazonClientException, AmazonServiceException;
+
+	/**
+	 * Creates the directory.<br/>
+	 * You can pass true/false flag to allow directories created in S3 to be publicly accessible.
 	 *
 	 * @param bucketName the bucket name
 	 * @param dirName the dir name

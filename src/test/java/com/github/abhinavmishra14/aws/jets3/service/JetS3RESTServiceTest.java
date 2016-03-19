@@ -38,7 +38,7 @@ public class JetS3RESTServiceTest {
 	private JetS3RESTService s3RESTService=null;
 	
 	/** The Constant AWS_S3_BUCKET. */
-	private static final String AWS_S3_BUCKET = "s3-publishing";
+	private static final String AWS_S3_BUCKET = "s3-publishing-test";
 	
 	/** The Constant AWS_ACCESS_KEY. */
 	private static final String AWS_ACCESS_KEY = "accessKey";

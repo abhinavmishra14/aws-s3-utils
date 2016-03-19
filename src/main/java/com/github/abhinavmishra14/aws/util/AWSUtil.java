@@ -45,7 +45,7 @@ public final class AWSUtil {
 	 */
 	public static File createTempFileFromStream(final InputStream inputStream)
 			throws IOException {
-		final File tempFile = File.createTempFile("tempFile", "s3Object");
+		final File tempFile = File.createTempFile(AWSUtilConstants.TEMP_FILE_PREFIX, AWSUtilConstants.TEMP_FILE_SUFFIX);
 		FileUtils.copyInputStreamToFile(inputStream, tempFile);    	
 		return tempFile;
 	}

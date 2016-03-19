@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 
 import com.github.abhinavmishra14.aws.jets3.service.JetS3RESTService;
 import com.github.abhinavmishra14.aws.util.AWSUtil;
+import com.github.abhinavmishra14.aws.util.AWSUtilConstants;
 
 /**
  * The Class JetS3RESTService.<br/>
@@ -62,9 +63,9 @@ public class JetS3RESTServiceImpl implements JetS3RESTService{
 	 * 
 	 */
 	public JetS3RESTServiceImpl(final String accessKey, final String secretKey, final String bucketName) {
-		AWSUtil.notNull(accessKey, "AccessKey is null!");
-		AWSUtil.notNull(secretKey, "SecretKey is null!");
-		AWSUtil.notNull(bucketName, "BucketName is null!");
+		AWSUtil.notNull(accessKey, AWSUtilConstants.ERR_MSG_ACCESSKEY);
+		AWSUtil.notNull(secretKey, AWSUtilConstants.ERR_MSG_SECRETKEY);
+		AWSUtil.notNull(bucketName, AWSUtilConstants.ERR_MSG_BUCKETNAME);
 
 		//Amazon Web Services BucketName
 		this.bucketName = bucketName;

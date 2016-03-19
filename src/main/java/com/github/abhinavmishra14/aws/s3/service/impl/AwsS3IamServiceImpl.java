@@ -56,6 +56,7 @@ import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.Upload;
 import com.github.abhinavmishra14.aws.s3.service.AwsS3IamService;
 import com.github.abhinavmishra14.aws.util.AWSUtil;
+import com.github.abhinavmishra14.aws.util.AWSUtilConstants;
 
 /**
  * The Class AwsS3IamServiceImpl.
@@ -72,9 +73,6 @@ public class AwsS3IamServiceImpl implements AwsS3IamService {
 
 	/** The secret key. */
 	private String secretKey;
-
-	/** The Constant SEPARATOR. */
-	private static final String SEPARATOR = "/";
 
 	/** The s3client. */
 	private AmazonS3 s3client;
@@ -103,8 +101,8 @@ public class AwsS3IamServiceImpl implements AwsS3IamService {
 	 * Inits the service.
 	 */
 	private void initService() {
-		AWSUtil.notNull(accessKey, "AccessKey is null!");
-		AWSUtil.notNull(secretKey, "SecretKey is null!");
+		AWSUtil.notNull(accessKey, AWSUtilConstants.ERR_MSG_ACCESSKEY);
+		AWSUtil.notNull(secretKey, AWSUtilConstants.ERR_MSG_SECRETKEY);
 		// credentials object identifying user for authentication
 		// user must have AWSConnector and AmazonS3FullAccess for
 		// this example to work
@@ -210,7 +208,7 @@ public class AwsS3IamServiceImpl implements AwsS3IamService {
 	@Override
 	public PutObjectResult uploadObject(final String bucketName, final String fileName, final InputStream inputStream,
 			final CannedAccessControlList cannedAcl) throws AmazonClientException, AmazonServiceException, IOException {
-		LOGGER.info("uploadObject invoked, bucketName: {} , fileName: {}, cannedAccessControlList: {} ", bucketName, fileName, cannedAcl);
+		LOGGER.info("uploadObject invoked, bucketName: {} , fileName: {}, cannedAccessControlList: {}", bucketName, fileName, cannedAcl);
 		File tempFile = null;
 		PutObjectRequest putObjectRequest = null;
 		PutObjectResult uploadResult = null;
@@ -231,7 +229,7 @@ public class AwsS3IamServiceImpl implements AwsS3IamService {
 	@Override
 	public PutObjectResult uploadObject(final String bucketName, final String fileName, final InputStream inputStream,
 			final boolean isPublicAccessible) throws AmazonClientException, AmazonServiceException, IOException {
-		LOGGER.info("uploadObject invoked, bucketName: {} , fileName: {} and isPublicAccessible: {} ", bucketName, fileName, isPublicAccessible);
+		LOGGER.info("uploadObject invoked, bucketName: {} , fileName: {} and isPublicAccessible: {}", bucketName, fileName, isPublicAccessible);
 		File tempFile = null;
 		PutObjectRequest putObjectRequest = null;
 		PutObjectResult uploadResult = null;
@@ -265,7 +263,7 @@ public class AwsS3IamServiceImpl implements AwsS3IamService {
 	public boolean uploadObjectAndListenProgress(final String bucketName, final String fileName,
 			final InputStream inputStream, final CannedAccessControlList cannedAcl)
 			throws AmazonClientException, AmazonServiceException, IOException {
-		LOGGER.info("uploadObjectAndListenProgress invoked, bucketName: {} , fileName: {} and cannedAccessControlList: {} ", bucketName, fileName, cannedAcl);
+		LOGGER.info("uploadObjectAndListenProgress invoked, bucketName: {} , fileName: {} and cannedAccessControlList: {}", bucketName, fileName, cannedAcl);
 		File tempFile = null;
 		PutObjectRequest putObjectRequest = null;
 		Upload upload = null;
@@ -313,7 +311,7 @@ public class AwsS3IamServiceImpl implements AwsS3IamService {
 	public boolean uploadObjectAndListenProgress(final String bucketName, final String fileName,
 			final InputStream inputStream, final boolean isPublicAccessible)
 			throws AmazonClientException, AmazonServiceException, IOException {
-		LOGGER.info("uploadObjectAndListenProgress invoked, bucketName: {} , fileName: {} and isPublicAccessible: {} ", bucketName, fileName, isPublicAccessible);
+		LOGGER.info("uploadObjectAndListenProgress invoked, bucketName: {} , fileName: {} and isPublicAccessible: {}", bucketName, fileName, isPublicAccessible);
 		File tempFile = null;
 		PutObjectRequest putObjectRequest = null;
 		Upload upload = null;
@@ -373,7 +371,7 @@ public class AwsS3IamServiceImpl implements AwsS3IamService {
 	@Override
 	public Upload uploadFileAsync(final String bucketName, final String fileName, final File fileObj,
 			final CannedAccessControlList cannedAcl) throws AmazonClientException, AmazonServiceException, IOException {
-		LOGGER.info("uploadObjectAsync invoked, bucketName: {} , fileName: {} and cannedAccessControlList: {} ", bucketName, fileName, cannedAcl);
+		LOGGER.info("uploadObjectAsync invoked, bucketName: {} , fileName: {} and cannedAccessControlList: {}", bucketName, fileName, cannedAcl);
 		final PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, fileName, fileObj).withCannedAcl(cannedAcl);
 		final TransferManager transferMgr = new TransferManager(s3client);
 		return transferMgr.upload(putObjectRequest);
@@ -385,7 +383,7 @@ public class AwsS3IamServiceImpl implements AwsS3IamService {
 	@Override
 	public Upload uploadFileAsync(final String bucketName, final String fileName, final File fileObj,
 			final boolean isPublicAccessible) throws AmazonClientException, AmazonServiceException, IOException {
-		LOGGER.info("uploadObjectAsync invoked, bucketName: {} , fileName: {} and isPublicAccessible: {} ", bucketName, fileName, isPublicAccessible);
+		LOGGER.info("uploadObjectAsync invoked, bucketName: {} , fileName: {} and isPublicAccessible: {}", bucketName, fileName, isPublicAccessible);
 		final PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, fileName, fileObj);
 		if(isPublicAccessible){
 		  putObjectRequest.setCannedAcl(CannedAccessControlList.PublicRead);
@@ -402,7 +400,7 @@ public class AwsS3IamServiceImpl implements AwsS3IamService {
 	public boolean uploadDirectoryOrFileAndListenProgress(final String bucketName, final File source,
 			final String virtualDirectoryKeyPrefix)
 			throws AmazonClientException, AmazonServiceException, FileNotFoundException {
-		LOGGER.info("uploadDirectoryOrFileAndWaitForCompletion invoked, bucketName: {} , Source: {} ", bucketName,
+		LOGGER.info("uploadDirectoryOrFileAndWaitForCompletion invoked, bucketName: {} , Source: {}", bucketName,
 				source.getAbsolutePath());
 		Transfer transfer = null;
 		final TransferManager transferMgr = new TransferManager(s3client);
@@ -452,7 +450,7 @@ public class AwsS3IamServiceImpl implements AwsS3IamService {
 	@Override
 	public Transfer uploadDirectoryOrFile(final String bucketName, final File source,
 			final String virtualDirectoryKeyPrefix) throws AmazonClientException, AmazonServiceException, IOException {
-		LOGGER.info("uploadDirectoryOrFile invoked, bucketName: {} , Source: {} ", bucketName,
+		LOGGER.info("uploadDirectoryOrFile invoked, bucketName: {} , Source: {}", bucketName,
 				source.getAbsolutePath());
 		Transfer transfer = null;
 		final TransferManager trMgr = new TransferManager(s3client);
@@ -485,7 +483,7 @@ public class AwsS3IamServiceImpl implements AwsS3IamService {
 	@Override
 	public InputStream getObject(final String bucketName, final String key)
 			throws AmazonClientException, AmazonServiceException {
-		LOGGER.info("getObject invoked, bucketName: {}, key: {} ", bucketName, key);
+		LOGGER.info("getObject invoked, bucketName: {}, key: {}", bucketName, key);
 		final GetObjectRequest getObjRequest = new GetObjectRequest(bucketName, key);
 		final S3Object s3Object = getObject(getObjRequest);
 		return s3Object.getObjectContent();
@@ -498,7 +496,7 @@ public class AwsS3IamServiceImpl implements AwsS3IamService {
 	@Override
 	public ObjectMetadata downloadObject(final String bucketName, final String key, final String filePath)
 			throws AmazonClientException, AmazonServiceException {
-		LOGGER.info("downloadObject invoked, bucketName: {}, key: {}, filePath: {} ", bucketName, key, filePath);
+		LOGGER.info("downloadObject invoked, bucketName: {}, key: {}, filePath: {}", bucketName, key, filePath);
 		final GetObjectRequest getObjRequest = new GetObjectRequest(bucketName, key);
 		return s3client.getObject(getObjRequest, new File(filePath));
 	}
@@ -518,14 +516,14 @@ public class AwsS3IamServiceImpl implements AwsS3IamService {
 	@Override
 	public PutObjectResult createDirectory(final String bucketName, final String dirName, final CannedAccessControlList cannedAcl)
 			throws AmazonClientException, AmazonServiceException {
-		LOGGER.info("createDirectory invoked, bucketName: {}, dirName: {} and cannedAccessControlList: {}  ", bucketName, dirName, cannedAcl);
+		LOGGER.info("createDirectory invoked, bucketName: {}, dirName: {} and cannedAccessControlList: {}", bucketName, dirName, cannedAcl);
 		final ObjectMetadata metadata = new ObjectMetadata();
 		metadata.setContentLength(0);
 		// Create empty content,since creating empty folder needs an empty content
 		final InputStream emptyContent = new ByteArrayInputStream(new byte[0]);
 		// Create a PutObjectRequest passing the directory name suffixed by '/'
-		final PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, dirName + SEPARATOR, emptyContent,
-				metadata).withCannedAcl(cannedAcl);
+		final PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, dirName + AWSUtilConstants.SEPARATOR,
+				emptyContent, metadata).withCannedAcl(cannedAcl);
 		return s3client.putObject(putObjectRequest);
 	}
 	
@@ -541,8 +539,8 @@ public class AwsS3IamServiceImpl implements AwsS3IamService {
 		// Create empty content,since creating empty folder needs an empty content
 		final InputStream emptyContent = new ByteArrayInputStream(new byte[0]);
 		// Create a PutObjectRequest passing the directory name suffixed by '/'
-		final PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, dirName + SEPARATOR, emptyContent,
-				metadata);
+		final PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, dirName + AWSUtilConstants.SEPARATOR,
+				emptyContent, metadata);
 		if(isPublicAccessible){
 		  putObjectRequest.setCannedAcl(CannedAccessControlList.PublicRead);
 		}
@@ -555,7 +553,7 @@ public class AwsS3IamServiceImpl implements AwsS3IamService {
 	@Override
 	public void deleteObject(final String bucketName, final String fileName)
 			throws AmazonClientException, AmazonServiceException {
-		LOGGER.info("deleteObject invoked, bucketName: {}, fileName: {} ", bucketName, fileName);
+		LOGGER.info("deleteObject invoked, bucketName: {}, fileName: {}", bucketName, fileName);
 		s3client.deleteObject(bucketName, fileName);
 	}
 
@@ -566,7 +564,7 @@ public class AwsS3IamServiceImpl implements AwsS3IamService {
 	@Override
 	public DeleteObjectsResult deleteObjects(final String bucketName, final List<KeyVersion> keys)
 			throws AmazonClientException, AmazonServiceException {
-		LOGGER.info("deleteObjects invoked, bucketName: {}, keys: {} ", bucketName, keys);
+		LOGGER.info("deleteObjects invoked, bucketName: {}, keys: {}", bucketName, keys);
 		final DeleteObjectsRequest deleteObjReq = new DeleteObjectsRequest(bucketName);
 		deleteObjReq.setKeys(keys);
 		return s3client.deleteObjects(deleteObjReq);
@@ -579,7 +577,7 @@ public class AwsS3IamServiceImpl implements AwsS3IamService {
 	@Override
 	public void deleteDirectory(final String bucketName, final String dirName)
 			throws AmazonClientException, AmazonServiceException {
-		LOGGER.info("deleteDirectory invoked, bucketName: {}, dirName: {} ", bucketName, dirName);
+		LOGGER.info("deleteDirectory invoked, bucketName: {}, dirName: {}", bucketName, dirName);
 		final List<S3ObjectSummary> listOfFiles = s3client.listObjects(bucketName, dirName).getObjectSummaries();
 		for (final S3ObjectSummary eachFile : listOfFiles) {
 			s3client.deleteObject(bucketName, eachFile.getKey());
@@ -593,7 +591,7 @@ public class AwsS3IamServiceImpl implements AwsS3IamService {
 	 */
 	@Override
 	public void cleanAndDeleteBucket(final String bucketName) throws AmazonClientException, AmazonServiceException {
-		LOGGER.info("cleanAndDeleteBucket invoked, bucketName: {} ", bucketName);
+		LOGGER.info("cleanAndDeleteBucket invoked, bucketName: {}", bucketName);
 		final List<S3ObjectSummary> listOfFiles = s3client.listObjects(bucketName).getObjectSummaries();
 		for (final S3ObjectSummary eachFile : listOfFiles) {
 			s3client.deleteObject(bucketName, eachFile.getKey());
@@ -615,7 +613,7 @@ public class AwsS3IamServiceImpl implements AwsS3IamService {
 	@Override
 	public String generateObjectUrlAsString(final String bucketName, final String fileName)
 			throws AmazonClientException, AmazonServiceException {
-		LOGGER.info("generateObjectUrlAsString invoked, bucketName: {}, fileName: {} ", bucketName, fileName);
+		LOGGER.info("generateObjectUrlAsString invoked, bucketName: {}, fileName: {}", bucketName, fileName);
 		return generateObjectURL(bucketName,fileName).toString();
 	}
 
@@ -625,7 +623,7 @@ public class AwsS3IamServiceImpl implements AwsS3IamService {
 	@Override
 	public URL generateObjectURL(final String bucketName, final String fileName)
 			throws AmazonClientException, AmazonServiceException {
-		LOGGER.info("generateObjectURL invoked, bucketName: {}, fileName: {} ", bucketName, fileName);
+		LOGGER.info("generateObjectURL invoked, bucketName: {}, fileName: {}", bucketName, fileName);
 		final GeneratePresignedUrlRequest presignedUrlReq = new GeneratePresignedUrlRequest(bucketName, fileName);
 		return s3client.generatePresignedUrl(presignedUrlReq);
 	}
@@ -648,41 +646,93 @@ public class AwsS3IamServiceImpl implements AwsS3IamService {
 			throws AmazonClientException, AmazonServiceException, AmazonS3Exception {
 		return s3client.getBucketAcl(bucketName);
 	}
-
+	
 	/* (non-Javadoc)
-	 * @see com.github.abhinavmishra14.aws.s3.service.AwsS3IamService#containsFullControlPermission(java.util.List)
+	 * @see com.github.abhinavmishra14.aws.s3.service.AwsS3IamService#hasFullControlPermission(java.lang.String)
 	 */
 	@Override
-	public boolean containsFullControlPermission(final List<Grant> grantList)
-			throws AmazonClientException, AmazonServiceException, AmazonS3Exception {
+	public boolean hasFullControlPermission(final String bucketName)
+			throws AmazonClientException, AmazonServiceException,
+			AmazonS3Exception {
+		LOGGER.info("Checking full controll permission on bucket..");
 		boolean hasFullControl = false;
+		final AccessControlList acl =  getBucketAccessControlList(bucketName);
+		final List<Grant> grantList = acl.getGrantsAsList();
 		for (final Grant grant : grantList) {
 			if(Permission.FullControl.equals(grant.getPermission())){
 				hasFullControl = true;
+				LOGGER.info("Permissions validated, hasFullControl: {}", hasFullControl);
 				break;
 			}
 		}
 		return hasFullControl;
 	}
-	
+
 	/* (non-Javadoc)
-	 * @see com.github.abhinavmishra14.aws.s3.service.AwsS3IamService#checkFullControlPermission(java.lang.String)
+	 * @see com.github.abhinavmishra14.aws.s3.service.AwsS3IamService#checkBucketPermission(java.lang.String, com.amazonaws.services.s3.model.Permission)
 	 */
 	@Override
-	public boolean checkFullControlPermission(final String bucketName)
-			throws AmazonClientException, AmazonServiceException,
-			AmazonS3Exception {
-		LOGGER.info("Checking permissions..");
-		boolean hasFullControl = false;
-		final AccessControlList acl =  s3client.getBucketAcl(bucketName);
+	public boolean checkBucketPermission(final String bucketName, final Permission permission)
+			throws AmazonClientException, AmazonServiceException, AmazonS3Exception {
+		LOGGER.info("Checking bucket permission..");
+		boolean hasPermission = false;
+		final AccessControlList acl =  getBucketAccessControlList(bucketName);
 		final List<Grant> grantList = acl.getGrantsAsList();
 		for (final Grant grant : grantList) {
-			if(Permission.FullControl.equals(grant.getPermission())){
-				hasFullControl = true;
+			if(permission.equals(grant.getPermission())){
+				hasPermission = true;
+				LOGGER.info("Permissions validated,hasPermission: {}",hasPermission);
 				break;
 			}
 		}
-		LOGGER.info("Permissions validated!");
-		return hasFullControl;
+		return hasPermission;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.github.abhinavmishra14.aws.s3.service.AwsS3IamService#hasWritePermissionOnBucket(java.lang.String)
+	 */
+	@Override
+	public boolean hasWritePermissionOnBucket(final String bucketName) {
+		LOGGER.info("Checking bucket write permission..");
+		boolean hasWritePermissions = false;
+		final ObjectMetadata metadata = new ObjectMetadata();
+		metadata.setContentLength(0);
+		// Create empty content
+		final InputStream emptyContent = new ByteArrayInputStream(new byte[0]);
+		// Create a PutObjectRequest with test object
+		final PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, AWSUtilConstants.SAMPLE_FILE_NAME,
+				emptyContent, metadata);
+		try {
+			if (s3client.putObject(putObjectRequest) != null) {
+				LOGGER.info("Permissions validated!");
+				//User has write permissions, TestPassed. 
+				hasWritePermissions = true;
+				//Delete the test object
+				deleteObject(bucketName, AWSUtilConstants.SAMPLE_FILE_NAME);
+			}
+		} catch (AmazonClientException s3Ex) {
+			LOGGER.warn("Write permissions not available!", s3Ex.getMessage());
+		}
+		return hasWritePermissions;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.github.abhinavmishra14.aws.s3.service.AwsS3IamService#checkObjectPermission(java.lang.String,java.lang.String, com.amazonaws.services.s3.model.Permission)
+	 */
+	@Override
+	public boolean checkObjectPermission(final String bucketName, final String key, final Permission permission)
+			throws AmazonClientException, AmazonServiceException, AmazonS3Exception {
+		LOGGER.info("Checking object permission..");
+		boolean hasPermission = false;
+		final AccessControlList objectAcl = s3client.getObjectAcl(bucketName, key);
+		final List<Grant> grantList = objectAcl.getGrantsAsList();
+		for (final Grant grant : grantList) {
+			if(permission.equals(grant.getPermission())){
+				hasPermission = true;
+				LOGGER.info("Permissions validated,hasPermission: {}",hasPermission);
+				break;
+			}
+		}
+		return hasPermission;
 	}
 }

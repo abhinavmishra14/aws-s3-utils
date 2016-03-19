@@ -34,12 +34,10 @@ import org.junit.Test;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
-import com.amazonaws.services.s3.model.CanonicalGrantee;
 import com.amazonaws.services.s3.model.DeleteObjectsRequest.KeyVersion;
 import com.amazonaws.services.s3.model.DeleteObjectsResult;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.Grant;
-import com.amazonaws.services.s3.model.Grantee;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.Permission;
 import com.amazonaws.services.s3.model.PutObjectResult;
@@ -48,6 +46,7 @@ import com.amazonaws.services.s3.transfer.Upload;
 import com.amazonaws.util.StringUtils;
 import com.github.abhinavmishra14.aws.s3.service.impl.AwsS3IamServiceImpl;
 import com.github.abhinavmishra14.aws.util.AWSUtil;
+import com.github.abhinavmishra14.aws.util.AWSUtilConstants;
 
 /**
  * The Class AwsS3IamServiceTest.
@@ -60,11 +59,7 @@ public class AwsS3IamServiceTest{
 	private AwsS3IamService awsS3IamService;
 	
 	/** The Constant AWS_S3_BUCKET. */
-	private static final String AWS_S3_BUCKET = "s3-publishing-test";
-	
-	/** The Constant SAMPLE_FILE_NAME. */
-	private static final String SAMPLE_FILE_NAME = "TestPutObject.txt";
-	
+	private static final String AWS_S3_BUCKET = "s3-publishing-test";	
 	
 	/**
 	 * Sets the up.
@@ -78,7 +73,7 @@ public class AwsS3IamServiceTest{
 		  constructor call to create instance of AwsS3IamService.*/
 		
 		//awsS3IamService = new AwsS3IamServiceImpl("accessKey","secretKey");
-		
+
 		/* For testing IAM services on EC2 instance which is already mapped with
 		  IAM role, use the default constructor call to create instance of
 		  AwsS3IamService. */
@@ -97,21 +92,6 @@ public class AwsS3IamServiceTest{
 		awsS3IamService.createBucket(AWS_S3_BUCKET);
 		List<Grant> bucketAcl = awsS3IamService.getBucketPermissions(AWS_S3_BUCKET);	
 		assertEquals(true, Permission.FullControl.equals(bucketAcl.get(0).getPermission()));
-	}
-
-	/**
-	 * Test method for {@link com.github.abhinavmishra14.aws.s3.service.AwsS3IamService#containsFullControlPermission(java.util.List)}.
-	 *
-	 * @throws Exception the exception
-	 */
-	@Test
-	public void testContainsFullControlPermission() throws Exception{
-		//Mock grant list to test full control permission
-		List<Grant> grantList = new ArrayList<>();
-		grantList.add(new Grant((Grantee) new CanonicalGrantee("155545dadd"), Permission.Read));
-		grantList.add(new Grant((Grantee) new CanonicalGrantee("4545dadddda"), Permission.Write));
-		grantList.add(new Grant((Grantee) new CanonicalGrantee("adad44555445"), Permission.FullControl));
-		assertEquals(true, awsS3IamService.containsFullControlPermission(grantList));
 	}
 	
 	/**
@@ -159,7 +139,7 @@ public class AwsS3IamServiceTest{
 	@Test
 	public void testUploadObject() throws Exception {
 		awsS3IamService.createBucket(AWS_S3_BUCKET);//create bucket for test
-		PutObjectResult pubObjRes = uploadObjectForTest(SAMPLE_FILE_NAME);
+		PutObjectResult pubObjRes = uploadObjectForTest(AWSUtilConstants.SAMPLE_FILE_NAME);
 		assertNotNull(pubObjRes);
 	}
 	
@@ -173,7 +153,7 @@ public class AwsS3IamServiceTest{
 		awsS3IamService.createBucket(AWS_S3_BUCKET);//create bucket for test
 		InputStream inStream = AwsS3IamServiceTest.class
 				.getResourceAsStream("/sample-file/TestPutObject.txt");
-		PutObjectResult pubObjRes =  awsS3IamService.uploadObject(AWS_S3_BUCKET,SAMPLE_FILE_NAME,inStream,true);
+		PutObjectResult pubObjRes =  awsS3IamService.uploadObject(AWS_S3_BUCKET,AWSUtilConstants.SAMPLE_FILE_NAME,inStream,true);
 		assertNotNull(pubObjRes);
 	}
 	
@@ -186,7 +166,7 @@ public class AwsS3IamServiceTest{
 	public void testUploadObjectWithCannedACL() throws Exception {
 		awsS3IamService.createBucket(AWS_S3_BUCKET);//create bucket for test
 		InputStream inStream = AwsS3IamServiceTest.class.getResourceAsStream("/sample-file/TestPutObject.txt");
-		PutObjectResult pubObjRes = awsS3IamService.uploadObject(AWS_S3_BUCKET,SAMPLE_FILE_NAME,inStream,CannedAccessControlList.PublicRead);
+		PutObjectResult pubObjRes = awsS3IamService.uploadObject(AWS_S3_BUCKET,AWSUtilConstants.SAMPLE_FILE_NAME,inStream,CannedAccessControlList.PublicRead);
 		assertNotNull(pubObjRes);
 	}
 
@@ -199,7 +179,7 @@ public class AwsS3IamServiceTest{
 	public void testUploadObjectWithACLAndWaitForCompletion() throws Exception{
 		awsS3IamService.createBucket(AWS_S3_BUCKET);//create bucket for test
 		InputStream inStream = AwsS3IamServiceTest.class.getResourceAsStream("/sample-file/TestPutObject.txt");
-		boolean isDone = awsS3IamService.uploadObjectAndListenProgress(AWS_S3_BUCKET,SAMPLE_FILE_NAME,inStream,CannedAccessControlList.PublicRead);
+		boolean isDone = awsS3IamService.uploadObjectAndListenProgress(AWS_S3_BUCKET,AWSUtilConstants.SAMPLE_FILE_NAME,inStream,CannedAccessControlList.PublicRead);
 		assertEquals(true,isDone);
 	}
 	
@@ -212,7 +192,7 @@ public class AwsS3IamServiceTest{
 	public void testUploadObjectAndWaitForCompletion() throws Exception{
 		awsS3IamService.createBucket(AWS_S3_BUCKET);//create bucket for test
 		InputStream inStream = AwsS3IamServiceTest.class.getResourceAsStream("/sample-file/TestPutObject.txt");
-		boolean isDone = awsS3IamService.uploadObjectAndListenProgress(AWS_S3_BUCKET,SAMPLE_FILE_NAME,inStream);
+		boolean isDone = awsS3IamService.uploadObjectAndListenProgress(AWS_S3_BUCKET,AWSUtilConstants.SAMPLE_FILE_NAME,inStream);
 		assertEquals(true,isDone);
 	}
 	
@@ -226,7 +206,7 @@ public class AwsS3IamServiceTest{
 		awsS3IamService.createBucket(AWS_S3_BUCKET);//create bucket for test
 		InputStream inStream = AwsS3IamServiceTest.class
 				.getResourceAsStream("/sample-file/TestPutObject.txt");
-		boolean isDone = awsS3IamService.uploadObjectAndListenProgress(AWS_S3_BUCKET,SAMPLE_FILE_NAME,inStream,true);
+		boolean isDone = awsS3IamService.uploadObjectAndListenProgress(AWS_S3_BUCKET,AWSUtilConstants.SAMPLE_FILE_NAME,inStream,true);
 		assertEquals(true,isDone);
 	}
 	
@@ -241,7 +221,7 @@ public class AwsS3IamServiceTest{
 		InputStream inStream = AwsS3IamServiceTest.class
 				.getResourceAsStream("/sample-file/TestPutObject.txt");
 		File tempFile = AWSUtil.createTempFileFromStream(inStream);
-		Upload upload = awsS3IamService.uploadFileAsync(AWS_S3_BUCKET, SAMPLE_FILE_NAME, tempFile);
+		Upload upload = awsS3IamService.uploadFileAsync(AWS_S3_BUCKET, AWSUtilConstants.SAMPLE_FILE_NAME, tempFile);
 		upload.waitForUploadResult();
 		assertEquals(true,upload.isDone());
 	}
@@ -257,7 +237,7 @@ public class AwsS3IamServiceTest{
 		InputStream inStream = AwsS3IamServiceTest.class
 				.getResourceAsStream("/sample-file/TestPutObject.txt");
 		File tempFile = AWSUtil.createTempFileFromStream(inStream);
-		Upload upload = awsS3IamService.uploadFileAsync(AWS_S3_BUCKET, SAMPLE_FILE_NAME, tempFile,true);
+		Upload upload = awsS3IamService.uploadFileAsync(AWS_S3_BUCKET, AWSUtilConstants.SAMPLE_FILE_NAME, tempFile,true);
 		upload.waitForUploadResult();
 		assertEquals(true,upload.isDone());
 	}
@@ -273,7 +253,7 @@ public class AwsS3IamServiceTest{
 		InputStream inStream = AwsS3IamServiceTest.class
 				.getResourceAsStream("/sample-file/TestPutObject.txt");
 		File tempFile = AWSUtil.createTempFileFromStream(inStream);
-		Upload upload = awsS3IamService.uploadFileAsync(AWS_S3_BUCKET, SAMPLE_FILE_NAME, tempFile,CannedAccessControlList.PublicRead);
+		Upload upload = awsS3IamService.uploadFileAsync(AWS_S3_BUCKET, AWSUtilConstants.SAMPLE_FILE_NAME, tempFile,CannedAccessControlList.PublicRead);
 		upload.waitForUploadResult();
 		assertEquals(true,upload.isDone());
 	}
@@ -292,15 +272,53 @@ public class AwsS3IamServiceTest{
 	}
 
 	/**
-	 * Test method for {@link com.github.abhinavmishra14.aws.s3.service.AwsS3IamService#checkFullControlPermission(java.lang.String)}.
+	 * Test method for {@link com.github.abhinavmishra14.aws.s3.service.AwsS3IamService#hasFullControlPermission(java.lang.String)}.
 	 *
 	 * @throws Exception the exception
 	 */
 	@Test
-	public void testCheckFullControlPermission() throws Exception {
+	public void testHasFullControlPermission() throws Exception {
 		awsS3IamService.createBucket(AWS_S3_BUCKET);//create bucket for test 
-		boolean hasPermissions = awsS3IamService.checkFullControlPermission(AWS_S3_BUCKET);
+		boolean hasPermissions = awsS3IamService.hasFullControlPermission(AWS_S3_BUCKET);
 		assertEquals(true, hasPermissions);
+	}
+	
+	/**
+	 * Test method for {@link com.github.abhinavmishra14.aws.s3.service.AwsS3IamService#checkBucketPermission(java.lang.String,com.amazonaws.services.s3.model.Permission)}.
+	 *
+	 * @throws Exception the exception
+	 */
+	@Test
+	public void testCheckBucketPermission() throws Exception {
+		awsS3IamService.createBucket(AWS_S3_BUCKET);//create bucket for test 
+		boolean checkPermission = awsS3IamService.checkBucketPermission(AWS_S3_BUCKET,Permission.FullControl);
+		assertEquals(true, checkPermission);
+	}
+	
+	/**
+	 * Test method for {@link com.github.abhinavmishra14.aws.s3.service.AwsS3IamService#hasWritePermissionOnBucket(java.lang.String)}.
+	 *
+	 * @throws Exception the exception
+	 */
+	@Test
+	public void testHasWritePermissionOnBucket() throws Exception {
+		awsS3IamService.createBucket(AWS_S3_BUCKET);//create bucket for test 
+		boolean checkPermission = awsS3IamService.hasWritePermissionOnBucket(AWS_S3_BUCKET);
+		assertEquals(true, checkPermission);
+	}
+		
+	/**
+	 * Test method for {@link com.github.abhinavmishra14.aws.s3.service.AwsS3IamService#checkObjectPermission(java.lang.String,java.lang.String,com.amazonaws.services.s3.model.Permission)}.
+	 *
+	 * @throws Exception the exception
+	 */
+	@Test
+	public void testCheckObjectPermission() throws Exception {
+		awsS3IamService.createBucket(AWS_S3_BUCKET);//create bucket for test
+		uploadObjectForTest(AWSUtilConstants.SAMPLE_FILE_NAME);// upload for test
+		boolean checkPermission = awsS3IamService.checkObjectPermission(AWS_S3_BUCKET,
+				AWSUtilConstants.SAMPLE_FILE_NAME, Permission.FullControl);
+		assertEquals(true, checkPermission);
 	}
 	
 	/**
@@ -311,11 +329,11 @@ public class AwsS3IamServiceTest{
 	@Test
 	public void testGetObject() throws Exception {
 		awsS3IamService.createBucket(AWS_S3_BUCKET);//create bucket for test 
-		uploadObjectForTest(SAMPLE_FILE_NAME);// upload for test
-		final GetObjectRequest getObjRequest = new GetObjectRequest(AWS_S3_BUCKET, SAMPLE_FILE_NAME);
+		uploadObjectForTest(AWSUtilConstants.SAMPLE_FILE_NAME);// upload for test
+		final GetObjectRequest getObjRequest = new GetObjectRequest(AWS_S3_BUCKET, AWSUtilConstants.SAMPLE_FILE_NAME);
 		S3Object s3Obj = awsS3IamService.getObject(getObjRequest);
 		assertNotNull(s3Obj);
-		assertEquals(SAMPLE_FILE_NAME, s3Obj.getKey());
+		assertEquals(AWSUtilConstants.SAMPLE_FILE_NAME, s3Obj.getKey());
 	}
 
 	/**
@@ -326,8 +344,8 @@ public class AwsS3IamServiceTest{
 	@Test
 	public void testGetObjectAsInputStream() throws Exception {
 		awsS3IamService.createBucket(AWS_S3_BUCKET);//create bucket for test 
-		uploadObjectForTest(SAMPLE_FILE_NAME);// upload for test
-		InputStream inStream = awsS3IamService.getObject(AWS_S3_BUCKET, SAMPLE_FILE_NAME);
+		uploadObjectForTest(AWSUtilConstants.SAMPLE_FILE_NAME);// upload for test
+		InputStream inStream = awsS3IamService.getObject(AWS_S3_BUCKET, AWSUtilConstants.SAMPLE_FILE_NAME);
 		assertNotNull(inStream);
 		assertEquals(true, inStream.available()>0);// check if content available in stream
 	}
@@ -340,8 +358,8 @@ public class AwsS3IamServiceTest{
 	@Test
 	public void testDownloadObject() throws Exception {
 		awsS3IamService.createBucket(AWS_S3_BUCKET);//create bucket for test 
-		uploadObjectForTest(SAMPLE_FILE_NAME);// upload for test
-		ObjectMetadata objMetadata = awsS3IamService.downloadObject(AWS_S3_BUCKET, SAMPLE_FILE_NAME, "test.txt");
+		uploadObjectForTest(AWSUtilConstants.SAMPLE_FILE_NAME);// upload for test
+		ObjectMetadata objMetadata = awsS3IamService.downloadObject(AWS_S3_BUCKET, AWSUtilConstants.SAMPLE_FILE_NAME, "test.txt");
 		assertNotNull(objMetadata);
 		assertEquals(true, objMetadata.getContentLength()>0);// check if content available
 	}
@@ -357,7 +375,7 @@ public class AwsS3IamServiceTest{
 		PutObjectResult response = awsS3IamService.createDirectory(AWS_S3_BUCKET, "test");
 		assertNotNull(response);
 		//put content in this dir
-		PutObjectResult pubObjRes = uploadObjectForTest(SAMPLE_FILE_NAME);
+		PutObjectResult pubObjRes = uploadObjectForTest(AWSUtilConstants.SAMPLE_FILE_NAME);
 		assertNotNull(pubObjRes);
 	}
 	
@@ -372,7 +390,7 @@ public class AwsS3IamServiceTest{
 		PutObjectResult response = awsS3IamService.createDirectory(AWS_S3_BUCKET, "test",true);
 		assertNotNull(response);
 		//put content in this dir
-		PutObjectResult pubObjRes = uploadObjectForTest(SAMPLE_FILE_NAME);
+		PutObjectResult pubObjRes = uploadObjectForTest(AWSUtilConstants.SAMPLE_FILE_NAME);
 		assertNotNull(pubObjRes);
 	}
 	
@@ -387,7 +405,7 @@ public class AwsS3IamServiceTest{
 		PutObjectResult response = awsS3IamService.createDirectory(AWS_S3_BUCKET, "test",CannedAccessControlList.PublicRead);
 		assertNotNull(response);
 		//put content in this dir
-		PutObjectResult pubObjRes = uploadObjectForTest(SAMPLE_FILE_NAME);
+		PutObjectResult pubObjRes = uploadObjectForTest(AWSUtilConstants.SAMPLE_FILE_NAME);
 		assertNotNull(pubObjRes);
 	}
 
@@ -399,9 +417,9 @@ public class AwsS3IamServiceTest{
 	@Test(expected = AmazonS3Exception.class) 
 	public void testDeleteObjectStringString() throws Exception {
 		awsS3IamService.createBucket(AWS_S3_BUCKET);//create bucket for test 
-		uploadObjectForTest(SAMPLE_FILE_NAME);// upload for test
-		awsS3IamService.deleteObject(AWS_S3_BUCKET, SAMPLE_FILE_NAME);
-		final GetObjectRequest getObjRequest = new GetObjectRequest(AWS_S3_BUCKET, SAMPLE_FILE_NAME);
+		uploadObjectForTest(AWSUtilConstants.SAMPLE_FILE_NAME);// upload for test
+		awsS3IamService.deleteObject(AWS_S3_BUCKET, AWSUtilConstants.SAMPLE_FILE_NAME);
+		final GetObjectRequest getObjRequest = new GetObjectRequest(AWS_S3_BUCKET, AWSUtilConstants.SAMPLE_FILE_NAME);
 		awsS3IamService.getObject(getObjRequest); // should throw AmazonS3Exception
 	}
 
@@ -413,7 +431,7 @@ public class AwsS3IamServiceTest{
 	@Test
 	public void testDeleteObjects() throws Exception {
 		List<KeyVersion> keys = new ArrayList<KeyVersion>();
-		KeyVersion key1= new KeyVersion(SAMPLE_FILE_NAME);
+		KeyVersion key1= new KeyVersion(AWSUtilConstants.SAMPLE_FILE_NAME);
 		KeyVersion key2= new KeyVersion("TestPutObject2.txt");
 		keys.add(key1);
 		keys.add(key2);
@@ -443,10 +461,10 @@ public class AwsS3IamServiceTest{
 	 */
 	@Test
 	public void testGenerateObjectUrlAsString() throws IOException {
-		String url = awsS3IamService.generateObjectUrlAsString(AWS_S3_BUCKET, SAMPLE_FILE_NAME);
+		String url = awsS3IamService.generateObjectUrlAsString(AWS_S3_BUCKET, AWSUtilConstants.SAMPLE_FILE_NAME);
 		assertEquals(true,!StringUtils.isNullOrEmpty(url));
 		assertEquals(true,url.contains(AWS_S3_BUCKET+".s3.amazonaws.com"));
-		assertEquals(true,url.contains(SAMPLE_FILE_NAME));
+		assertEquals(true,url.contains(AWSUtilConstants.SAMPLE_FILE_NAME));
 	}
 	
 	/**
@@ -456,10 +474,10 @@ public class AwsS3IamServiceTest{
 	 */
 	@Test
 	public void testGenerateObjectURL() throws IOException {
-		URL url = awsS3IamService.generateObjectURL(AWS_S3_BUCKET, SAMPLE_FILE_NAME);
+		URL url = awsS3IamService.generateObjectURL(AWS_S3_BUCKET, AWSUtilConstants.SAMPLE_FILE_NAME);
 		assertEquals(true, url != null);
 		assertEquals(true,url.getHost().contains(AWS_S3_BUCKET+".s3.amazonaws.com"));
-		assertEquals(true,url.getPath().contains(SAMPLE_FILE_NAME));
+		assertEquals(true,url.getPath().contains(AWSUtilConstants.SAMPLE_FILE_NAME));
 	}
 	
 	/**

@@ -35,6 +35,7 @@ import com.amazonaws.services.s3.model.DeleteObjectsResult;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.Grant;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.Permission;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectResult;
 import com.amazonaws.services.s3.model.S3Object;
@@ -561,40 +562,31 @@ public interface AwsS3IamService {
 	 * @see com.amazonaws.services.s3.model.Grant
 	 * @see com.amazonaws.services.s3.model.Permission
 	 * @see com.amazonaws.services.s3.model.Grantee
+	 * @see <a href="http://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#permissions">Permissions</a>
 	 */
 	List<Grant> getBucketPermissions(final String bucketName)
 			throws AmazonClientException, AmazonServiceException, AmazonS3Exception;
-	
-	/**
-	 * Checks if the grant list has full control permission <br/>
-	 * If access to the given bucket is not valid then 'AccessDenied' error will be raised.
-	 *
-	 * @param grantList the grant list
-	 * @return true, if successful
-	 * @throws AmazonClientException the amazon client exception
-	 * @throws AmazonServiceException the amazon service exception
-	 * @throws AmazonS3Exception the amazon s3 exception
-	 */
-	boolean containsFullControlPermission(final List<Grant> grantList)
-			throws AmazonClientException, AmazonServiceException, AmazonS3Exception;
-	
+		
 	/**
 	 * Checks if the bucket has full control permission <br/>
-	 * If access to the given bucket is not valid then 'AccessDenied' error will be raised.
+	 * If access to the given bucket is not valid then 'AccessDenied' error will be raised.<br/>
+	 * Read ACP permission should be available to user who is trying to check permission on bucket.
 	 *
 	 * @param bucketName the bucket name
 	 * @return true, if successful
 	 * @throws AmazonClientException the amazon client exception
 	 * @throws AmazonServiceException the amazon service exception
 	 * @throws AmazonS3Exception the amazon s3 exception
+	 * @see <a href="http://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#permissions">Permissions</a>
 	 */
-	boolean checkFullControlPermission(final String bucketName)
+	boolean hasFullControlPermission(final String bucketName)
 			throws AmazonClientException, AmazonServiceException, AmazonS3Exception;
-	
+		
 	/**
 	 * Gets the bucket access control list.<br/>
 	 * Provides opportunities to grant permissions and check permissions on bucket.<br/>
-	 * If access to the given bucket is not valid then 'AccessDenied' error will be raised.
+	 * If access to the given bucket is not valid then 'AccessDenied' error will be raised.<br/>
+	 * Read ACP permission should be available to user who is trying to check permission on bucket.
 	 *
 	 * @param bucketName the bucket name
 	 * @return the bucket access control list
@@ -602,7 +594,50 @@ public interface AwsS3IamService {
 	 * @throws AmazonServiceException the amazon service exception
 	 * @throws AmazonS3Exception the amazon s3 exception
 	 * @see com.amazonaws.services.s3.model.AccessControlList
+	 * @see <a href="http://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#permissions">Permissions</a>
 	 */
 	AccessControlList getBucketAccessControlList(final String bucketName)
 			throws AmazonClientException, AmazonServiceException, AmazonS3Exception;
+	
+	/**
+	 * Check bucket permission.<br/>
+	 * If access to the given bucket is not valid then 'AccessDenied' error will be raised.<br/>
+	 * Read ACP permission should be available to user who is trying to check permission on bucket.
+	 *
+	 * @param bucketName the bucket name
+	 * @param permission the permission
+	 * @return true, if successful
+	 * @throws AmazonClientException the amazon client exception
+	 * @throws AmazonServiceException the amazon service exception
+	 * @throws AmazonS3Exception the amazon s3 exception
+	 * @see <a href="http://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#permissions">Permissions</a>
+	 */
+	boolean checkBucketPermission(final String bucketName,final Permission permission)
+			throws AmazonClientException, AmazonServiceException, AmazonS3Exception;
+	
+	/**
+	 * Check object permission.<br/>
+	 * If object is not available in given bucket, an exception will be thrown
+	 *
+	 * @param bucketName the bucket name
+	 * @param key the full path of object in given bucket
+	 * @param permission the permission
+	 * @return true, if successful
+	 * @throws AmazonClientException the amazon client exception
+	 * @throws AmazonServiceException the amazon service exception
+	 * @throws AmazonS3Exception the amazon s3 exception
+	 * @see <a href="http://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#permissions">Permissions</a>
+	 */
+	boolean checkObjectPermission(final String bucketName, final String key, final Permission permission)
+			throws AmazonClientException, AmazonServiceException, AmazonS3Exception;
+	
+	/**
+	 * Checks for write permission on s3 bucket.<br/>
+	 * It checks if user has write permissions on bucket or not, even if ReadACP is not granted.
+	 *
+	 * @param bucketName the bucket name
+	 * @return true, if successful
+	 */
+	boolean hasWritePermissionOnBucket(final String bucketName);
+
 }

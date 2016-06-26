@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.abhinavmishra14</groupId>
 	<artifactId>aws-s3-utils</artifactId>
-	<version>1.3</version>
+	<version>1.4</version>
 	<packaging>jar</packaging>
 	<name>aws-s3-utils</name>
 	<description>This project is a utility for performing operations on Amazon S3 bucket.</description>
@@ -40,12 +40,12 @@
 		<dependency>
 			<groupId>com.amazonaws</groupId>
 			<artifactId>aws-java-sdk-s3</artifactId>
-			<version>1.10.10</version>
+			<version>1.11.10</version>
 		</dependency>
 		<dependency>
 			<groupId>net.java.dev.jets3t</groupId>
 			<artifactId>jets3t</artifactId>
-			<version>0.9.3</version>
+			<version>0.9.4</version>
 		</dependency>
 
 		<dependency>
@@ -57,13 +57,13 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<version>1.7.12</version>
+			<version>1.7.19</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
-			<version>1.7.12</version>
+			<version>1.7.19</version>
 		</dependency>
 
 		<!-- Test dependencies -->
@@ -71,13 +71,6 @@
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.12</version>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-all</artifactId>
-			<version>1.10.19</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
@@ -243,6 +236,11 @@
 					<!-- Run PMD on the tests. Default: false -->
 					<includeTests>false</includeTests>
 					
+					<!-- Skip the PMD checks. Most useful on the command line via "-Dpmd.skip=true" -->
+					<skip>false</skip>
+					
+					<!-- Print details of check failures to build output. -->
+					<verbose>true</verbose>
 					<!-- Link the violation line numbers to the source xref. Links will be created 
 						automatically if the jxr plugin is being used. Default: true -->
 					<linkXRef>true</linkXRef>
@@ -252,6 +250,9 @@
 						to use. See the net.sourceforge.pmd.renderers package javadoc for available 
 						renderers. XML is required if the pmd:check goal is being used. Default: xml-->
 					<format>xml</format>
+					
+					<!-- Fail build if there are high priority warnings during pmd:check. Default value is 5 -->
+					<failurePriority>1</failurePriority>
 					
 					<!-- A list of files to include from checking. Can contain Ant-style wildcards 
 						and double wildcards. Defaults to **\/*.java.-->
@@ -284,7 +285,7 @@
 						    <goal>pmd</goal>
 						   
 						    <!-- Fail the build if there were any PMD violations in the source code. Uncomment if needed -->
-							<!-- <goal>check</goal> -->
+							<goal>check</goal>
 							
 							<!-- Creates a report for PMD's copy paste detector tool -->
 							<goal>cpd</goal>
@@ -311,7 +312,7 @@
                     -->
 				    <effort>Min</effort>
 				    <!-- Reports all bugs (other values are High|Normal|Low|Exp|Ignore) -->
-        		    <threshold>Low</threshold>
+        		    <threshold>High</threshold>
         		    <xmlOutput>true</xmlOutput>
 					<!-- Optional directory to save findbugs xdoc xml report -->
 					<xmlOutputDirectory>${project.reporting.outputDirectory}</xmlOutputDirectory>
@@ -326,10 +327,10 @@
 						<phase>package</phase>
 						<goals>
 						    <!-- This goal will check code and generate report -->
-							<goal>findbugs</goal>
+							<!-- <goal>findbugs</goal> -->
 							
 							<!-- Fail the build if there were any findBugs violations in the source code. Uncomment if needed -->
-							<!-- <goal>check</goal> -->
+							<goal>check</goal>
 						</goals>
 					</execution>
 				</executions>

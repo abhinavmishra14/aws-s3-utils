@@ -40,10 +40,6 @@ public final class AWSUtilConstants {
 	
 	/** The Constant ERR_MSG_SECRETKEY. */
 	public static final String ERR_MSG_SECRETKEY = "SecretKey is null!";
-	
-	/** The Constant ERR_MSG_BUCKETNAME. */
-	public static final String ERR_MSG_BUCKETNAME = "BucketName is null!";
-
 
 	/**
 	 * Instantiates a new AWS Util Constants.

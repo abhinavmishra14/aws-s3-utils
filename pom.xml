@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.abhinavmishra14</groupId>
 	<artifactId>aws-s3-utils</artifactId>
-	<version>1.4</version>
+	<version>1.4-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>aws-s3-utils</name>
 	<description>This project is a utility for performing operations on Amazon S3 bucket.</description>

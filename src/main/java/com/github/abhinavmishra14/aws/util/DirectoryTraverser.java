@@ -73,9 +73,7 @@ public final class DirectoryTraverser {
 		return sortedSetOfFiles;
 	}
 
-
-
-
+	
 	/**
 	 * Checks if is valid directory.<br/>
 	 * If directory exists then it is valid. If directory is valid then it can
@@ -87,12 +85,15 @@ public final class DirectoryTraverser {
 	private static void checkDirectories(final File directoryUri) throws FileNotFoundException {
 		if (directoryUri == null) {
 			throw new IllegalArgumentException("Directory should not be null.");
-		}if (!directoryUri.exists()) {
-			throw new FileNotFoundException("Directory does not exist: "+ directoryUri);
-		}if (!directoryUri.isDirectory()) {
-			throw new IllegalArgumentException("Is not a directory: "+ directoryUri);
-		}if (!directoryUri.canRead()) {
-			throw new IllegalArgumentException("Directory cannot be read: "+ directoryUri);
+		}
+		if (!directoryUri.exists()) {
+			throw new FileNotFoundException("Directory does not exist: " + directoryUri);
+		}
+		if (!directoryUri.isDirectory()) {
+			throw new IllegalArgumentException("Is not a directory: " + directoryUri);
+		}
+		if (!directoryUri.canRead()) {
+			throw new IllegalArgumentException("Directory cannot be read: " + directoryUri);
 		}
 	}
 

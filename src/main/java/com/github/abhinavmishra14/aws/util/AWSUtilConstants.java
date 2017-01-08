@@ -34,7 +34,6 @@ public final class AWSUtilConstants {
 	/** The Constant SEPARATOR. */
 	public static final String SEPARATOR = "/";
 	
-	//Error messages
 	/** The Constant ERR_MSG_ACCESSKEY. */
 	public static final String ERR_MSG_ACCESSKEY = "AccessKey is null!";
 	

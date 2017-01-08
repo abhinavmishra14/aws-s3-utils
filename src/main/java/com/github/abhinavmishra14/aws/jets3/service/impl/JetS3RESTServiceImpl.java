@@ -58,7 +58,7 @@ public class JetS3RESTServiceImpl implements JetS3RESTService{
 	private static final Logger LOGGER = LoggerFactory.getLogger(JetS3RESTServiceImpl.class);
 
 	/** The s3Service. */
-	private S3Service s3Service;
+	private final S3Service s3Service;
 
 	/**
 	 * Instantiates a new rEST service.<br/>

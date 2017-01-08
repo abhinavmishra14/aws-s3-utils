@@ -42,17 +42,20 @@ public interface JetS3RESTService {
 	/**
 	 * Put object.
 	 *
+	 * @param bucketName the bucket name
 	 * @param fileName the file name
 	 * @return true, if successful
 	 * @throws S3ServiceException the s3 service exception
 	 * @throws NoSuchAlgorithmException the no such algorithm exception
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
-	boolean putObject(final String bucketName, final String fileName) throws S3ServiceException, NoSuchAlgorithmException, IOException;
+	boolean putObject(final String bucketName, final String fileName)
+			throws S3ServiceException, NoSuchAlgorithmException, IOException;
 
 	/**
 	 * Put object.
 	 *
+	 * @param bucketName the bucket name
 	 * @param fileName the file name
 	 * @return true, if successful
 	 * @throws S3ServiceException the s3 service exception
@@ -77,6 +80,7 @@ public interface JetS3RESTService {
 	/**
 	 * Delete object.
 	 *
+	 * @param bucketName the bucket name
 	 * @param fileName the file name
 	 * @throws NoSuchAlgorithmException the no such algorithm exception
 	 * @throws IOException Signals that an I/O exception has occurred.
@@ -98,8 +102,8 @@ public interface JetS3RESTService {
 	 *
 	 * @param bucketName the bucket name
 	 * @throws ServiceException the service exception
-	 * @throws IOException 
-	 * @throws NoSuchAlgorithmException 
+	 * @throws NoSuchAlgorithmException the no such algorithm exception
+	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	void cleanAndDeleteBucket(final String bucketName) throws ServiceException, NoSuchAlgorithmException, IOException;
 	
@@ -174,7 +178,7 @@ public interface JetS3RESTService {
 	 * @param objectKey the object key
 	 * @return the object as stream
 	 * @throws S3ServiceException the s3 service exception
-	 * @throws ServiceException 
+	 * @throws ServiceException the service exception
 	 */
 	InputStream getObjectAsStream(final String bucketName, final String objectKey)
 			throws S3ServiceException, ServiceException;

@@ -96,6 +96,9 @@ public final class DirectoryTraverser {
 		}
 	}
 
+	/**
+	 * Instantiates a new directory traverser.
+	 */
 	private DirectoryTraverser() {
 		super();
 	}

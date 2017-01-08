@@ -54,6 +54,7 @@ public final class AWSUtil {
 	 * Delete temp file.
 	 *
 	 * @param tempFile the temp file
+	 * @return true, if successful
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public static boolean deleteTempFile(final File tempFile) throws IOException {

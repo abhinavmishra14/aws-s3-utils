@@ -4,11 +4,10 @@
 	xsi:noNamespaceSchemaLocation="http://pmd.sf.net/ruleset_xml_schema.xsd"
 	xsi:schemaLocation="http://pmd.sf.net/ruleset/1.0.0 http://pmd.sf.net/ruleset_xml_schema.xsd">
 	<description>
-             PMD Plugin preferences rule set
-             Priority means: 1 – error, high priority, 2 – error,
-             normal priority, 3 – warning, high priority, 4 – warning,
-             normal priority and 5 – information.
-       </description>
+		PMD Plugin preferences rule set
+		Priority means: 1 – error, high priority, 2 – error,
+		normal priority, 3 – warning, high priority, 4 – warning, normal priority and 5 – information.
+	</description>
 	<rule ref="rulesets/java/typeresolution.xml/LooseCoupling">
 		<priority>3</priority>
 	</rule>
@@ -17,27 +16,31 @@
 		<priority>3</priority>
 	</rule>
 	<rule ref="rulesets/java/typeresolution.xml/UnusedImports">
-		<priority>4</priority>
+		<priority>1</priority>
 	</rule>
 	<rule
 		ref="rulesets/java/typeresolution.xml/SignatureDeclareThrowsException">
 		<priority>3</priority>
 	</rule>
 	<rule ref="rulesets/java/braces.xml/ForLoopsMustUseBraces">
-		<priority>3</priority>
+		<priority>1</priority>
 	</rule>
-	<rule ref="rulesets/java/braces.xml">
-		<exclude name="IfStmtsMustUseBraces" />
-		<exclude name="IfElseStmtsMustUseBraces" />
-		<exclude name="WhileLoopsMustUseBraces" />
+	<rule ref="rulesets/java/braces.xml/IfStmtsMustUseBraces">
+		<priority>1</priority>
+	</rule>
+	<rule ref="rulesets/java/braces.xml/IfElseStmtsMustUseBraces">
+		<priority>1</priority>
+	</rule>
+	<rule ref="rulesets/java/braces.xml/WhileLoopsMustUseBraces">
+		<priority>1</priority>
 	</rule>
 	<rule ref="rulesets/java/naming.xml/ShortVariable">
 		<priority>1</priority>
 		<properties>
 			<property name="xpath">
 				<value>
-                                 //VariableDeclaratorId[string-length(@Image) &lt; 3]
-                           </value>
+					//VariableDeclaratorId[string-length(@Image) &lt; 3]
+				</value>
 			</property>
 		</properties>
 	</rule>
@@ -46,18 +49,18 @@
 		<properties>
 			<property name="xpath">
 				<value>
-                                 //VariableDeclaratorId[string-length(@Image) > 40]
-                           </value>
+					//VariableDeclaratorId[string-length(@Image) > 40]
+				</value>
 			</property>
 		</properties>
 	</rule>
 	<rule ref="rulesets/java/naming.xml/ShortMethodName">
-		<priority>4</priority>
+		<priority>1</priority>
 		<properties>
 			<property name="xpath">
 				<value>
-                                 //MethodDeclarator[string-length(@Image) &lt; 2]
-                           </value>
+					//MethodDeclarator[string-length(@Image) &lt; 2]
+				</value>
 			</property>
 		</properties>
 	</rule>
@@ -169,7 +172,7 @@
 		<priority>3</priority>
 	</rule>
 	<rule ref="rulesets/java/design.xml/ImmutableField">
-		<priority>3</priority>
+		<priority>1</priority>
 	</rule>
 	<rule ref="rulesets/java/design.xml/UseLocaleWithCaseConversions">
 		<priority>3</priority>
@@ -182,10 +185,10 @@
 	</rule>
 	<rule
 		ref="rulesets/java/design.xml/MissingStaticMethodInNonInstantiatableClass">
-		<priority>3</priority>
+		<priority>1</priority>
 	</rule>
 	<rule ref="rulesets/java/design.xml/AvoidSynchronizedAtMethodLevel">
-		<priority>1</priority>
+		<priority>2</priority>
 	</rule>
 	<rule ref="rulesets/java/design.xml/MissingBreakInSwitch">
 		<priority>1</priority>
@@ -194,13 +197,13 @@
 		<priority>1</priority>
 	</rule>
 	<rule ref="rulesets/java/design.xml/AvoidInstanceofChecksInCatchClause">
-		<priority>1</priority>
+		<priority>2</priority>
 	</rule>
 	<rule ref="rulesets/java/design.xml/AbstractClassWithoutAbstractMethod">
 		<priority>1</priority>
 	</rule>
 	<rule ref="rulesets/java/design.xml/SimplifyConditional">
-		<priority>3</priority>
+		<priority>1</priority>
 	</rule>
 	<rule ref="rulesets/java/design.xml/CompareObjectsWithEquals">
 		<priority>1</priority>
@@ -208,11 +211,14 @@
 	<rule ref="rulesets/java/design.xml/PositionLiteralsFirstInComparisons">
 		<priority>1</priority>
 	</rule>
+	<rule ref="rulesets/java/design.xml/PositionLiteralsFirstInCaseInsensitiveComparisons">
+		<priority>1</priority>
+	</rule>
 	<rule ref="rulesets/java/design.xml/UnnecessaryLocalBeforeReturn">
 		<priority>1</priority>
 	</rule>
 	<rule ref="rulesets/java/design.xml/NonThreadSafeSingleton">
-		<priority>3</priority>
+		<priority>1</priority>
 	</rule>
 
 	<rule ref="rulesets/java/design.xml/UncommentedEmptyMethodBody">
@@ -223,7 +229,7 @@
 		<priority>1</priority>
 	</rule>
 	<rule ref="rulesets/java/design.xml/AvoidConstantsInterface">
-		<priority>3</priority>
+		<priority>1</priority>
 	</rule>
 	<rule ref="rulesets/java/design.xml/UnsynchronizedStaticDateFormatter">
 		<priority>3</priority>
@@ -232,8 +238,9 @@
 		<exclude name="ConfusingTernary" />
 	</rule>
 	<rule ref="rulesets/java/design.xml/UseCollectionIsEmpty">
-		<priority>2</priority>
+		<priority>1</priority>
 	</rule>
+	
 	<rule ref="rulesets/java/design.xml/PreserveStackTrace">
 		<priority>1</priority>
 	</rule>
@@ -264,17 +271,17 @@
 		<priority>1</priority>
 	</rule>
 	<rule ref="rulesets/java/strictexception.xml/AvoidCatchingThrowable">
-		<priority>1</priority>
+		<priority>2</priority>
 	</rule>
 	<rule
 		ref="rulesets/java/strictexception.xml/SignatureDeclareThrowsException">
 		<priority>3</priority>
 	</rule>
 	<rule ref="rulesets/java/strictexception.xml/ExceptionAsFlowControl">
-		<priority>2</priority>
+		<priority>1</priority>
 	</rule>
 	<rule ref="rulesets/java/strictexception.xml/AvoidCatchingNPE">
-		<priority>3</priority>
+		<priority>1</priority>
 	</rule>
 	<rule
 		ref="rulesets/java/strictexception.xml/AvoidThrowingRawExceptionTypes">
@@ -291,7 +298,7 @@
 		<priority>1</priority>
 	</rule>
 	<rule ref="rulesets/java/strictexception.xml/DoNotThrowExceptionInFinally">
-		<priority>3</priority>
+		<priority>1</priority>
 	</rule>
 	<rule
 		ref="rulesets/java/strictexception.xml/AvoidThrowingNewInstanceOfSameException">
@@ -367,16 +374,16 @@
 		<priority>1</priority>
 	</rule>
 	<rule ref="rulesets/java/strings.xml/InefficientEmptyStringCheck">
-		<priority>3</priority>
+		<priority>1</priority>
 	</rule>
 	<rule ref="rulesets/java/strings.xml/InsufficientStringBufferDeclaration">
-		<priority>2</priority>
+		<priority>1</priority>
 	</rule>
 	<rule ref="rulesets/java/strings.xml/UselessStringValueOf">
 		<priority>1</priority>
 	</rule>
 	<rule ref="rulesets/java/strings.xml/StringBufferInstantiationWithChar">
-		<priority>4</priority>
+		<priority>1</priority>
 	</rule>
 	<rule ref="rulesets/java/strings.xml/UseEqualsToCompareStrings">
 		<priority>1</priority>
@@ -394,10 +401,10 @@
 		<priority>3</priority>
 	</rule>
 	<rule ref="rulesets/java/migrating.xml/AvoidEnumAsIdentifier">
-		<priority>2</priority>
+		<priority>1</priority>
 	</rule>
 	<rule ref="rulesets/java/migrating.xml/AvoidAssertAsIdentifier">
-		<priority>2</priority>
+		<priority>1</priority>
 	</rule>
 	<rule ref="rulesets/java/migrating.xml/IntegerInstantiation">
 		<priority>1</priority>
@@ -474,7 +481,7 @@
 		<priority>1</priority>
 	</rule>
 	<rule ref="rulesets/java/optimizations.xml/UseArraysAsList">
-		<priority>3</priority>
+		<priority>1</priority>
 	</rule>
 	<rule ref="rulesets/java/optimizations.xml/AvoidArrayLoops">
 		<priority>2</priority>
@@ -487,58 +494,61 @@
 		<priority>1</priority>
 	</rule>
 	<rule ref="rulesets/java/optimizations.xml/RedundantFieldInitializer">
-		<priority>3</priority>
+		<priority>1</priority>
 	</rule>
 	<rule ref="rulesets/java/optimizations.xml/PrematureDeclaration">
 		<priority>1</priority>
 	</rule>
 	<rule ref="rulesets/java/empty.xml/EmptyCatchBlock">
-		<priority>4</priority>
+		<priority>1</priority>
 	</rule>
 	<rule ref="rulesets/java/empty.xml/EmptyIfStmt">
-		<priority>4</priority>
+		<priority>1</priority>
 	</rule>
 	<rule ref="rulesets/java/empty.xml/EmptyWhileStmt">
-		<priority>4</priority>
+		<priority>1</priority>
 	</rule>
 	<rule ref="rulesets/java/empty.xml/EmptyTryBlock">
-		<priority>4</priority>
+		<priority>1</priority>
 	</rule>
 	<rule ref="rulesets/java/empty.xml/EmptyFinallyBlock">
-		<priority>4</priority>
+		<priority>1</priority>
 	</rule>
 	<rule ref="rulesets/java/empty.xml/EmptySwitchStatements">
-		<priority>4</priority>
+		<priority>1</priority>
 	</rule>
 	<rule ref="rulesets/java/empty.xml/EmptySynchronizedBlock">
-		<priority>4</priority>
+		<priority>1</priority>
 	</rule>
 	<rule ref="rulesets/java/empty.xml/EmptyStaticInitializer">
-		<priority>4</priority>
+		<priority>1</priority>
 	</rule>
 	<rule ref="rulesets/java/empty.xml/EmptyStatementNotInLoop">
-		<priority>4</priority>
+		<priority>1</priority>
 	</rule>
 	<rule ref="rulesets/java/empty.xml/EmptyInitializer">
-		<priority>4</priority>
+		<priority>1</priority>
 	</rule>
 	<rule ref="rulesets/java/unnecessary.xml/UnnecessaryConversionTemporary">
-		<priority>4</priority>
+		<priority>1</priority>
+	</rule>
+	<rule ref="rulesets/java/unnecessary.xml/UselessParentheses">
+		<priority>3</priority>
 	</rule>
 	<rule ref="rulesets/java/unnecessary.xml/UnnecessaryReturn">
-		<priority>4</priority>
+		<priority>1</priority>
 	</rule>
 	<rule ref="rulesets/java/unnecessary.xml/UnnecessaryFinalModifier">
-		<priority>4</priority>
+		<priority>1</priority>
 	</rule>
 	<rule ref="rulesets/java/unnecessary.xml/UselessOverridingMethod">
-		<priority>4</priority>
+		<priority>1</priority>
 	</rule>
 	<rule ref="rulesets/java/unnecessary.xml/UselessOperationOnImmutable">
-		<priority>4</priority>
+		<priority>1</priority>
 	</rule>
 	<rule ref="rulesets/java/unnecessary.xml/UnusedNullCheckInEquals">
-		<priority>4</priority>
+		<priority>1</priority>
 	</rule>
 	<rule ref="rulesets/java/basic.xml/JumbledIncrementer">
 		<priority>3</priority>
@@ -547,38 +557,38 @@
 		<priority>3</priority>
 	</rule>
 	<rule ref="rulesets/java/basic.xml/OverrideBothEqualsAndHashcode">
-		<priority>3</priority>
+		<priority>1</priority>
 	</rule>
 	<rule ref="rulesets/java/basic.xml/DoubleCheckedLocking">
 		<priority>1</priority>
 	</rule>
 	<rule ref="rulesets/java/basic.xml/ReturnFromFinallyBlock">
-		<priority>3</priority>
+		<priority>1</priority>
 	</rule>
 	<rule ref="rulesets/java/basic.xml/UnconditionalIfStatement">
-		<priority>3</priority>
+		<priority>1</priority>
 	</rule>
 	<rule ref="rulesets/java/basic.xml/BooleanInstantiation">
-		<priority>2</priority>
+		<priority>1</priority>
 	</rule>
 	<rule ref="rulesets/java/basic.xml/CollapsibleIfStatements">
 		<priority>1</priority>
 	</rule>
 	<rule ref="rulesets/java/basic.xml/ClassCastExceptionWithToArray">
-		<priority>3</priority>
+		<priority>1</priority>
 	</rule>
 	<rule
 		ref="rulesets/java/basic.xml/AvoidDecimalLiteralsInBigDecimalConstructor">
-		<priority>3</priority>
+		<priority>1</priority>
 	</rule>
 	<rule ref="rulesets/java/basic.xml/MisplacedNullCheck">
-		<priority>3</priority>
+		<priority>1</priority>
 	</rule>
 	<rule ref="rulesets/java/basic.xml/AvoidThreadGroup">
 		<priority>3</priority>
 	</rule>
 	<rule ref="rulesets/java/basic.xml/BrokenNullCheck">
-		<priority>2</priority>
+		<priority>1</priority>
 	</rule>
 	<rule ref="rulesets/java/basic.xml/BigIntegerInstantiation">
 		<priority>3</priority>
@@ -596,7 +606,7 @@
 		<priority>2</priority>
 	</rule>
 	<rule ref="rulesets/java/basic.xml/ExtendsObject">
-		<priority>4</priority>
+		<priority>1</priority>
 	</rule>
 	<rule ref="rulesets/java/basic.xml/CheckSkipResult">
 		<priority>3</priority>
@@ -626,19 +636,19 @@
 		<priority>3</priority>
 	</rule>
 	<rule ref="rulesets/java/imports.xml/DuplicateImports">
-		<priority>4</priority>
+		<priority>1</priority>
 	</rule>
 	<rule ref="rulesets/java/imports.xml/DontImportJavaLang">
 		<priority>4</priority>
 	</rule>
 	<rule ref="rulesets/java/imports.xml/UnusedImports">
-		<priority>4</priority>
+		<priority>1</priority>
 	</rule>
 	<rule ref="rulesets/java/imports.xml/ImportFromSamePackage">
-		<priority>3</priority>
+		<priority>1</priority>
 	</rule>
 	<rule ref="rulesets/java/imports.xml/UnnecessaryFullyQualifiedName">
-		<priority>4</priority>
+		<priority>1</priority>
 	</rule>
 	<rule ref="rulesets/java/imports.xml/TooManyStaticImports">
 		<priority>3</priority>
@@ -682,9 +692,6 @@
 	<rule ref="rulesets/java/controversial.xml/AssignmentInOperand">
 		<priority>4</priority>
 	</rule>
-	<rule ref="rulesets/java/controversial.xml/AtLeastOneConstructor">
-		<priority>4</priority>
-	</rule>
 	<rule ref="rulesets/java/controversial.xml/DontImportSun">
 		<priority>4</priority>
 	</rule>
@@ -704,7 +711,7 @@
 		<priority>3</priority>
 	</rule>
 	<rule ref="rulesets/java/controversial.xml/AvoidUsingShortType">
-		<priority>1</priority>
+		<priority>2</priority>
 	</rule>
 	<rule ref="rulesets/java/controversial.xml/AvoidUsingVolatile">
 		<priority>2</priority>
@@ -719,6 +726,7 @@
 		<exclude name="DataflowAnomalyAnalysis" />
 		<exclude name="UnnecessaryConstructor" />
 		<exclude name="AvoidFinalLocalVariable" />
+		<exclude name="AtLeastOneConstructor"/>
 	</rule>
 	<rule
 		ref="rulesets/java/controversial.xml/DoNotCallGarbageCollectionExplicitly">
@@ -769,22 +777,22 @@
 		<priority>3</priority>
 	</rule>
 	<rule ref="rulesets/java/finalizers.xml/EmptyFinalizer">
-		<priority>3</priority>
+		<priority>1</priority>
 	</rule>
 	<rule ref="rulesets/java/finalizers.xml/FinalizeOnlyCallsSuperFinalize">
-		<priority>3</priority>
+		<priority>1</priority>
 	</rule>
 	<rule ref="rulesets/java/finalizers.xml/FinalizeOverloaded">
-		<priority>3</priority>
+		<priority>1</priority>
 	</rule>
 	<rule ref="rulesets/java/finalizers.xml/FinalizeDoesNotCallSuperFinalize">
-		<priority>3</priority>
+		<priority>1</priority>
 	</rule>
 	<rule ref="rulesets/java/finalizers.xml/FinalizeShouldBeProtected">
-		<priority>3</priority>
+		<priority>1</priority>
 	</rule>
 	<rule ref="rulesets/java/finalizers.xml/AvoidCallingFinalize">
-		<priority>3</priority>
+		<priority>1</priority>
 	</rule>
 	<rule
 		ref="rulesets/java/logging-jakarta-commons.xml/UseCorrectExceptionLogging">
@@ -797,15 +805,15 @@
 		<priority>3</priority>
 	</rule>
 	<rule ref="rulesets/java/javabeans.xml/MissingSerialVersionUID">
-		<priority>3</priority>
+		<priority>1</priority>
 	</rule>
 	<rule ref="rulesets/java/clone.xml/ProperCloneImplementation">
-		<priority>2</priority>
+		<priority>1</priority>
 	</rule>
 	<rule ref="rulesets/java/clone.xml/CloneThrowsCloneNotSupportedException">
-		<priority>3</priority>
+		<priority>1</priority>
 	</rule>
 	<rule ref="rulesets/java/clone.xml/CloneMethodMustImplementCloneable">
-		<priority>3</priority>
+		<priority>1</priority>
 	</rule>
 </ruleset>

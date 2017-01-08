@@ -23,6 +23,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Date;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -628,6 +629,29 @@ public class AwsS3IamServiceImpl implements AwsS3IamService {
 		return s3client.generatePresignedUrl(presignedUrlReq);
 	}
 
+
+	/* (non-Javadoc)
+	 * @see com.github.abhinavmishra14.aws.s3.service.AwsS3IamService#generateObjectUrlAsString(java.lang.String, java.lang.String, java.util.Date)
+	 */
+	@Override
+	public String generateObjectUrlAsString(final String bucketName, final String fileName, final Date expires)
+			throws AmazonClientException, AmazonServiceException {
+		LOGGER.info("generateObjectUrlAsString invoked, bucketName: {}, fileName: {} and expires: {}", bucketName, fileName, expires);
+		return generateObjectURL(bucketName,fileName,expires).toString();
+	}
+
+	/* (non-Javadoc)
+	 * @see com.github.abhinavmishra14.aws.s3.service.AwsS3IamService#generateObjectURL(java.lang.String, java.lang.String, java.util.Date)
+	 */
+	@Override
+	public URL generateObjectURL(final String bucketName, final String fileName, final Date expires)
+			throws AmazonClientException, AmazonServiceException {
+		LOGGER.info("generateObjectURL invoked, bucketName: {}, fileName: {} and expires: {}", bucketName, fileName, expires);
+		final GeneratePresignedUrlRequest presignedUrlReq = new GeneratePresignedUrlRequest(bucketName, fileName);
+		presignedUrlReq.setExpiration(expires);
+		return s3client.generatePresignedUrl(presignedUrlReq);
+	}
+	
 	/* (non-Javadoc)
 	 * @see com.abhinav.aws.s3.service.AwsS3IamService#getBucketPermissions(java.lang.String)
 	 */

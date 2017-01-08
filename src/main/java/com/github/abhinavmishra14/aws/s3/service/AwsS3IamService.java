@@ -22,6 +22,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Date;
 import java.util.List;
 
 import com.amazonaws.AmazonClientException;
@@ -544,6 +545,32 @@ public interface AwsS3IamService {
 	 * @throws AmazonServiceException the amazon service exception
 	 */
 	URL generateObjectURL(final String bucketName, final String fileName)
+			throws AmazonClientException, AmazonServiceException;
+	
+	/**
+	 * Generate object url as string.
+	 *
+	 * @param bucketName the bucket name
+	 * @param fileName the file name
+	 * @param expires the expires
+	 * @return the string
+	 * @throws AmazonClientException the amazon client exception
+	 * @throws AmazonServiceException the amazon service exception
+	 */
+	String generateObjectUrlAsString(final String bucketName, final String fileName, final Date expires)
+			throws AmazonClientException, AmazonServiceException;
+	
+	/**
+	 * Generate object url.
+	 *
+	 * @param bucketName the bucket name
+	 * @param fileName the file name
+	 * @param expires the expires
+	 * @return the url
+	 * @throws AmazonClientException the amazon client exception
+	 * @throws AmazonServiceException the amazon service exception
+	 */
+	URL generateObjectURL(final String bucketName, final String fileName,final Date expires)
 			throws AmazonClientException, AmazonServiceException;
 	
 	/**

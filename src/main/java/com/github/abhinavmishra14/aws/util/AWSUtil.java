@@ -20,6 +20,8 @@ package com.github.abhinavmishra14.aws.util;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Calendar;
+import java.util.Date;
 
 import org.apache.commons.io.FileUtils;
 
@@ -76,5 +78,23 @@ public final class AWSUtil {
 		if (parameterValue == null){
 			throw new IllegalArgumentException(errorMessage);
 		}
+	}
+	
+	/**
+	 * Gets the expiry date.<br/>
+	 * Expire by parameter takes input as Calendar.Month, Calendar.Hour, Calendar.Minute etc. 
+	 *
+	 * @param expireBy the expire by 
+	 * @param expireByValue the expire by value
+	 * @return the expiry date
+	 * @see Calendar
+	 */
+	public static Date getExpiryDate(final int expireBy,
+			final int expireByValue) {
+		final Date currentDate = new Date();
+	    final Calendar cal = Calendar.getInstance();
+	    cal.setTime(currentDate);
+	    cal.add(expireBy, expireByValue);
+		return cal.getTime();
 	}
 }

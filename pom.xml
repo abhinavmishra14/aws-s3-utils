@@ -7,7 +7,7 @@
 	<packaging>jar</packaging>
 	<name>aws-s3-utils</name>
 	<description>This project is a utility for performing operations on Amazon S3 bucket.</description>
-    <url>https://github.com/abhinavmishra14/amazon-aws-s3-utils</url>
+    <url>https://github.com/abhinavmishra14/aws-s3-utils</url>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<!-- Append copyright info into java docs -->

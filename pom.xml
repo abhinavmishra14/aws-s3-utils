@@ -31,9 +31,9 @@
 	</developers>
 
 	<scm>
-		<connection>scm:git:git@github.com:abhinavmishra14/amazon-aws-s3-utils.git</connection>
-		<developerConnection>scm:git:git@github.com:abhinavmishra14/amazon-aws-s3-utils.git</developerConnection>
-		<url>git@github.com:abhinavmishra14/amazon-aws-s3-utils.git</url>
+		<connection>scm:git:git@github.com:abhinavmishra14/aws-s3-utils.git</connection>
+		<developerConnection>scm:git:git@github.com:abhinavmishra14/aws-s3-utils.git</developerConnection>
+		<url>git@github.com:abhinavmishra14/aws-s3-utils.git</url>
 	</scm>
 
 	<dependencies>

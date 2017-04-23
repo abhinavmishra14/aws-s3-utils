@@ -7,11 +7,7 @@ jets3t		http://www.jets3t.org/ - Copyright 2006-2009 James Murty.
 commons-*   http://commons.apache.org/
  
 ===MIT License===
-mockito-all  http://mockito.org/
 slf4j-*   http://www.slf4j.org/
-
-===BSD License===
-hemcrest-*  http://hamcrest.org/JavaHamcrest/
 
 ===Eclipse Public License====
 junit-*  http://junit.org/
